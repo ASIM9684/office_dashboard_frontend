@@ -35,7 +35,7 @@ const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth()); // 0 
         const token = localStorage.getItem("token");
         const decoded = jwtDecode(token);
         const userId = decoded.userId;
-        const res = await fetch(`http://192.168.18.15:8000/getAttendenceById/${userId}`);
+        const res = await fetch(`https://6c14ece9-c0bc-4b02-b5b0-b5526dc05b8e-00-bw55jwex1z46.sisko.replit.dev/getAttendenceById/${userId}`);
         const data = await res.json();
         if (res.ok) {
           setAttendanceData(data);
@@ -90,7 +90,7 @@ useEffect(() => {
       const decoded = jwtDecode(token);
       const userId = decoded.userId;
 
-      const res = await fetch("http://192.168.18.15:8000/addAttendance", {
+      const res = await fetch("https://6c14ece9-c0bc-4b02-b5b0-b5526dc05b8e-00-bw55jwex1z46.sisko.replit.dev/addAttendance", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

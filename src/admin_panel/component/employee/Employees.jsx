@@ -10,7 +10,7 @@ export default function EmployeesPage() {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const response = await axios.get("http://192.168.18.15:8000/getEmployee");
+        const response = await axios.get("https://6c14ece9-c0bc-4b02-b5b0-b5526dc05b8e-00-bw55jwex1z46.sisko.replit.dev/getEmployee");
         setEmployees(response.data);
       } catch (error) {
         console.error("Error fetching employees:", error);
@@ -22,7 +22,7 @@ export default function EmployeesPage() {
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this employee?")) {
       axios
-        .delete(`http://192.168.18.15:8000/deleteEmployee/${id}`)
+        .delete(`https://6c14ece9-c0bc-4b02-b5b0-b5526dc05b8e-00-bw55jwex1z46.sisko.replit.dev/deleteEmployee/${id}`)
         .then(() => {
           setEmployees((prev) => prev.filter((emp) => emp._id !== id));
         })

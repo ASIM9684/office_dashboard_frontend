@@ -27,8 +27,8 @@ const navigate = useNavigate();
     const fetchData = async () => {
       try {
         const [deptRes, roleRes] = await Promise.all([
-          axios.get("http://192.168.18.15:8000/getDepartments"),
-          axios.get("http://192.168.18.15:8000/getRoles"),
+          axios.get("https://6c14ece9-c0bc-4b02-b5b0-b5526dc05b8e-00-bw55jwex1z46.sisko.replit.dev/getDepartments"),
+          axios.get("https://6c14ece9-c0bc-4b02-b5b0-b5526dc05b8e-00-bw55jwex1z46.sisko.replit.dev/getRoles"),
         ]);
         setDepartments(deptRes.data);
         setRoles(roleRes.data);
@@ -47,7 +47,7 @@ const navigate = useNavigate();
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Submitted:", formData);
-    const response = axios.put(`http://192.168.18.15:8000/updateEmployee/${id}`, formData);
+    const response = axios.put(`https://6c14ece9-c0bc-4b02-b5b0-b5526dc05b8e-00-bw55jwex1z46.sisko.replit.dev/updateEmployee/${id}`, formData);
     response
       .then((res) => {
         console.log("Employee added successfully:", res.data);

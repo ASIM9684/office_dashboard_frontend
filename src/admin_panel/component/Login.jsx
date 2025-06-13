@@ -24,7 +24,7 @@ const Login = () => {
     setError("");
 
     try {
-      const res = await axios.post("http://192.168.18.15:8000/login", formData);
+      const res = await axios.post("https://6c14ece9-c0bc-4b02-b5b0-b5526dc05b8e-00-bw55jwex1z46.sisko.replit.dev/login", formData);
       
       // Store token (optional)
       localStorage.setItem("token", res.data.token);
