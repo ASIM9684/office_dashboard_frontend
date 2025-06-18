@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { UserPlus } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { showSuccessToast } from "../../utils/toast";
 
 const AddDepartmentForm = () => {
   const [formData, setFormData] = useState({
@@ -15,13 +16,13 @@ const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Submitted:", formData);
-    const response = axios.post("https://6c14ece9-c0bc-4b02-b5b0-b5526dc05b8e-00-bw55jwex1z46.sisko.replit.dev/addDepartment", formData);
+    const response = axios.post("http://192.168.18.15:8000/addDepartment", formData);
     response
       .then((res) => {
         setFormData({
           name: "",
         });
+        showSuccessToast("Department Added Successfully")
         navigate("/department");
       })
       .catch((error) => {

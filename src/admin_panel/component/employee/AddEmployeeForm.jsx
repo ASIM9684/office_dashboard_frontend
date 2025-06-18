@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { UserPlus } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { showSuccessToast } from "../../utils/toast";
 
 const AddEmployeeForm = () => {
   const [formData, setFormData] = useState({
@@ -21,8 +22,8 @@ const navigate = useNavigate();
     const fetchData = async () => {
       try {
         const [deptRes, roleRes] = await Promise.all([
-          axios.get("https://6c14ece9-c0bc-4b02-b5b0-b5526dc05b8e-00-bw55jwex1z46.sisko.replit.dev/getDepartments"),
-          axios.get("https://6c14ece9-c0bc-4b02-b5b0-b5526dc05b8e-00-bw55jwex1z46.sisko.replit.dev/getRoles"),
+          axios.get("http://192.168.18.15:8000/getDepartments"),
+          axios.get("http://192.168.18.15:8000/getRoles"),
         ]);
         setDepartments(deptRes.data);
         setRoles(roleRes.data);
@@ -40,11 +41,9 @@ const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Submitted:", formData);
-    const response = axios.post("https://6c14ece9-c0bc-4b02-b5b0-b5526dc05b8e-00-bw55jwex1z46.sisko.replit.dev/addemployee", formData);
+  const response = axios.post("http://192.168.18.15:8000/addemployee", formData);
     response
       .then((res) => {
-        console.log("Employee added successfully:", res.data);
         setFormData({
           name: "",
           email: "",
@@ -54,6 +53,7 @@ const navigate = useNavigate();
           joiningDate: "",
           phone: ""
         });
+        showSuccessToast("Employee Added Successfully")
         navigate("/employees");
       })
       .catch((error) => {

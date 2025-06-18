@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { User, Pencil, Trash2, PlusCircle } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { showSuccessToast } from "../../utils/toast";
 
 export default function EmployeesPage() {
   const [employees, setEmployees] = useState([]);
@@ -10,8 +11,9 @@ export default function EmployeesPage() {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const response = await axios.get("https://6c14ece9-c0bc-4b02-b5b0-b5526dc05b8e-00-bw55jwex1z46.sisko.replit.dev/getEmployee");
+        const response = await axios.get("http://192.168.18.15:8000/getEmployee");
         setEmployees(response.data);
+        
       } catch (error) {
         console.error("Error fetching employees:", error);
       }
@@ -22,9 +24,10 @@ export default function EmployeesPage() {
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this employee?")) {
       axios
-        .delete(`https://6c14ece9-c0bc-4b02-b5b0-b5526dc05b8e-00-bw55jwex1z46.sisko.replit.dev/deleteEmployee/${id}`)
+        .delete(`http://192.168.18.15:8000/deleteEmployee/${id}`)
         .then(() => {
           setEmployees((prev) => prev.filter((emp) => emp._id !== id));
+              showSuccessToast("Employee Deleted Successfully")
         })
         .catch((error) => {
           console.error("Error deleting employee:", error);
@@ -68,6 +71,8 @@ export default function EmployeesPage() {
               <th className="py-3 px-4">Role</th>
               <th className="py-3 px-4">Joining Date</th>
               <th className="py-3 px-4 text-center">Actions</th>
+              <th className="py-3 px-4 text-center">Attendence</th>
+              <th className="py-3 px-4 text-center">Assign Task</th>
             </tr>
           </thead>
           <tbody>
@@ -98,11 +103,27 @@ export default function EmployeesPage() {
                     </button>
                   </div>
                 </td>
+                <td className="py-3 px-4 text-center">
+                  <button
+                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition"
+                    onClick={() => router(`/AttendanceCardList/${emp._id}`)}
+                  >
+                    View Attendance
+                  </button>
+                </td>
+                <td className="py-3 px-4 text-center">
+                  <button
+                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition"
+                    onClick={() => router(`/AssignTask/${emp._id}`)}
+                  >
+                    Assign Task
+                  </button>
+                </td>
               </tr>
             ))}
             {employees.length === 0 && (
               <tr>
-                <td colSpan="6" className="text-center py-6 text-gray-500">
+                <td colSpan="7" className="text-center py-6 text-gray-500">
                   No employees found.
                 </td>
               </tr>
@@ -129,9 +150,27 @@ export default function EmployeesPage() {
               <div className="text-sm text-gray-600">
                 <strong>Role:</strong> {emp.role?.name}
               </div>
-              <div className="text-sm text-gray-600 mb-3">
+              <div className="text-sm text-gray-600">
                 <strong>Join Date:</strong>{" "}
                 {emp.joinDate ? new Date(emp.joinDate).toLocaleDateString() : ""}
+              </div>
+              <div className="text-sm text-gray-600">
+                <strong>View Attendance:</strong>{" "}
+                 <button
+                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition mb-1"
+                    onClick={() => router(`/AttendanceCardList/${emp._id}`)}
+                  >
+                    View Attendance
+                  </button>
+              </div>
+              <div className="text-sm text-gray-600 mb-3">
+                <strong>Assign Task:</strong>{" "}
+                 <button
+                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition mb-3"
+                    onClick={() => router(`/AssignTask/${emp._id}`)}
+                  >
+                    Assign Task
+                  </button>
               </div>
               <div className="flex gap-4">
                 <button

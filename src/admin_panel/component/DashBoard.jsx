@@ -19,6 +19,9 @@ import {
   Cell,
   Legend,
 } from "recharts";
+import AttendanceOwnCard from "./cards/AttendanceOwnCard";
+import axios from "axios";
+import { showErrorToast, showSuccessToast } from "../utils/toast";
 
 const Dashboard = () => {
   const [clockInTime, setClockInTime] = useState(0);
@@ -27,15 +30,45 @@ const Dashboard = () => {
   const [breakRunning, setBreakRunning] = useState(false);
   const [attendanceData, setAttendanceData] = useState([]);
   const [chartData, setChartData] = useState([]);
-const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth()); // 0 = Jan, ..., 11 = Dec
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth()); // 0 = Jan, ..., 11 = Dec
+  const [startTime, setStartTime] = useState(null);
+  const [departmentData, setDepartmentData] = useState([]);
+const [counts, setCounts] = useState({
+  departmentCount: 0,
+  userCount: 0,
+  attendanceCount: 0,
+});
 
- useEffect(() => {
+useEffect(() => {
+  const fetchCounts = async () => {
+    try {
+      const res = await axios.get("http://192.168.18.15:8000/getDashboardCounts");
+      setCounts(res.data);
+    } catch (err) {
+      console.error("Failed to fetch dashboard counts", err);
+    }
+  };
+const fetchdepartmentData = async () => {
+  try {
+    const res = await axios.get("http://192.168.18.15:8000/getUserCountByDepartment");
+    setDepartmentData(res.data);
+  } catch (err) {
+    console.error("Failed to fetch department data", err);
+  }
+};
+  fetchdepartmentData();
+  fetchCounts();
+}, []);
+
+  useEffect(() => {
     const fetchAttendanceData = async () => {
       try {
         const token = localStorage.getItem("token");
         const decoded = jwtDecode(token);
         const userId = decoded.userId;
-        const res = await fetch(`https://6c14ece9-c0bc-4b02-b5b0-b5526dc05b8e-00-bw55jwex1z46.sisko.replit.dev/getAttendenceById/${userId}`);
+        const res = await fetch(
+          `http://192.168.18.15:8000/getAttendenceById/${userId}`
+        );
         const data = await res.json();
         if (res.ok) {
           setAttendanceData(data);
@@ -49,30 +82,34 @@ const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth()); // 0 
     fetchAttendanceData();
   }, []);
 
-useEffect(() => {
-  if (attendanceData.length === 0) return;
+  useEffect(() => {
+    if (attendanceData.length === 0) return;
 
-  const toSeconds = (timeStr) => {
-    const [h, m, s] = timeStr.split(":").map(Number);
-    return h * 3600 + m * 60 + s;
-  };
+    const toSeconds = (timeStr) => {
+      const [h, m, s] = timeStr.split(":").map(Number);
+      return h * 3600 + m * 60 + s;
+    };
 
-  const filtered = attendanceData.filter((entry) => {
-    const date = new Date(entry.createdAt);
-    return date.getMonth() === selectedMonth;
-  });
+    const filtered = attendanceData.filter((entry) => {
+      const date = new Date(entry.createdAt);
+      return date.getMonth() === selectedMonth;
+    });
 
-  const formatted = filtered.map((entry) => ({
-    day: new Date(entry.createdAt).toLocaleDateString("default", {
-      day: "numeric",
-      month: "short",
-    }),
-    clockTime: toSeconds(entry.clockTime),
-    breakTime: toSeconds(entry.breakTime),
-  }));
+    const formatted = filtered.map((entry) => {
+      const clockTimeStr = typeof entry.clockTime === "string" ? entry.clockTime : "00:00:00";
+      const breakTimeStr = typeof entry.breakTime === "string" ? entry.breakTime : "00:00:00";
+      return {
+        day: new Date(entry.createdAt).toLocaleDateString("default", {
+          day: "numeric",
+          month: "short",
+        }),
+        clockTime: /^\d{2}:\d{2}:\d{2}$/.test(clockTimeStr) ? toSeconds(clockTimeStr) : 0,
+        breakTime: /^\d{2}:\d{2}:\d{2}$/.test(breakTimeStr) ? toSeconds(breakTimeStr) : 0,
+      };
+    });
 
-  setChartData(formatted);
-}, [attendanceData, selectedMonth]);
+    setChartData(formatted);
+  }, [attendanceData, selectedMonth]);
 
   const formatSeconds = (seconds) => {
     const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
@@ -81,39 +118,37 @@ useEffect(() => {
     return `${h}:${m}:${s}`;
   };
 
-  const submitAttendance = async () => {
-    const clockTimeStr = formatTime(clockInTime);
-    const breakTimeStr = formatTime(breakTime);
+const submitAttendance = async () => {
+  const clockTimeStr = formatTime(clockInTime);
+  const breakTimeStr = formatTime(breakTime);
+  const endTime = new Date().toISOString();
 
-    try {
-      const token = localStorage.getItem('token');
-      const decoded = jwtDecode(token);
-      const userId = decoded.userId;
+  try {
+    const token = localStorage.getItem("token");
+    const decoded = jwtDecode(token);
+    const userId = decoded.userId;
 
-      const res = await fetch("https://6c14ece9-c0bc-4b02-b5b0-b5526dc05b8e-00-bw55jwex1z46.sisko.replit.dev/addAttendance", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          clockTime: clockTimeStr,
-          breakTime: breakTimeStr,
-          userId,
-        }),
-      });
+    const res = await fetch("http://192.168.18.15:8000/addAttendance", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        clockTime: clockTimeStr,
+        breakTime: breakTimeStr,
+        userId,
+        startTime,
+        endTime,
+      }),
+    });
 
-      const data = await res.json();
-      if (res.ok) {
-        alert("Attendance submitted!");
-        console.log("Saved Attendance:", data);
-      } else {
-        alert(data.message || "Failed to submit");
-      }
-    } catch (err) {
-      console.error("Error submitting attendance:", err);
-      alert("Server error");
-    }
-  };
+    const data = await res.json();
+  } catch (err) {
+    console.error("Error submitting attendance:", err);
+    alert("Server error");
+  }
+};
+
 
   useEffect(() => {
     let clockInInterval;
@@ -146,106 +181,216 @@ useEffect(() => {
     return `${hrs}:${mins}:${secs}`;
   };
 
-  const formatSecondsToHHMMSS = (totalSeconds) => {
-    const hrs = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
-    const mins = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
-    const secs = String(totalSeconds % 60).padStart(2, '0');
-    return `${hrs}:${mins}:${secs}`;
-  };
+  useEffect(() => {
+  const storedClockInStart = localStorage.getItem("clockInStartTime");
+  const storedBreakStart = localStorage.getItem("breakStartTime");
 
-  const departmentData = [
-    { name: "HR", value: 10 },
-    { name: "IT", value: 40 },
-    { name: "Finance", value: 20 },
-    { name: "Sales", value: 30 },
-  ];
+  const isClockInRunning = localStorage.getItem("clockInRunning") === "true";
+  const isBreakRunning = localStorage.getItem("breakRunning") === "true";
 
+  if (isClockInRunning && storedClockInStart) {
+    const elapsed = Math.floor((Date.now() - new Date(storedClockInStart)) / 1000);
+    setClockInTime(elapsed);
+    setStartTime(storedClockInStart);
+    setClockInRunning(true);
+  }
+
+  if (isBreakRunning && storedBreakStart) {
+    const elapsed = Math.floor((Date.now() - new Date(storedBreakStart)) / 1000);
+    setBreakTime(elapsed);
+    setBreakRunning(true);
+  }
+}, []);
+
+const todayAttendance = (status) => {
+    const token = localStorage.getItem("token");
+        const decoded = jwtDecode(token);
+        const userId = decoded.userId;
+          const start = new Date().toISOString();
+ axios.post(
+  `http://192.168.18.15:8000/addTodayAttendance`,{
+    userId,
+    startTime : start,
+    status
+  })
+    .then((res) => {
+      if (res.status === 201) {
+        localStorage.setItem("attendanceId", res.data.attendance._id);
+        
+      } else {
+        console.error("Failed to submit attendance:", res.data.message);
+      }
+    })
+    .catch((error) => {
+      console.error("Error submitting attendance:", error);
+    });
+}
+
+const updatetodayattendance = async (status, shouldSetEndTime = false) => {
+  try {
+    const attendanceId = localStorage.getItem("attendanceId");
+    if (!attendanceId) {
+      console.error("No attendance ID found in localStorage");
+      return;
+    }
+
+    const endTime = shouldSetEndTime ? new Date().toISOString() : null;
+
+    const res = await axios.put(
+      `http://192.168.18.15:8000/updatetodayattendance/${attendanceId}`,
+      {
+        status,
+        endTime,
+      }
+    );
+
+  
+  } catch (error) {
+    console.error("Error updating attendance:", error);
+  }
+};
   const pieColors = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444"];
 
   return (
     <div className="p-4">
-    
       <h1 className="text-2xl font-bold mb-6 text-gray-800">Admin Dashboard</h1>
 
-      <div className="flex items-center justify-between mb-6">
-        <div className="text-left text-sm text-gray-700">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
+        <div className="text-left text-sm text-gray-700  mb-2 md:mb-0 space-y-1">
           <div>Clock In Timer: {formatTime(clockInTime)}</div>
           <div>Break Timer: {formatTime(breakTime)}</div>
         </div>
 
         <div className="flex gap-x-5">
           <button
-            onClick={() => {
-              if (clockInRunning) {
-                submitAttendance();
-              }
-              setClockInRunning((prev) => !prev);
-            }}
+onClick={() => {
+  if (clockInRunning) {
+    submitAttendance();
+    updatetodayattendance("Clock Out", true);
+    localStorage.removeItem("attendanceId");
+    setClockInRunning(false);
+    setBreakRunning(false);
+    localStorage.removeItem("clockInStartTime");
+    localStorage.removeItem("clockInRunning");
+    localStorage.removeItem("breakStartTime");
+    localStorage.removeItem("breakRunning");
+    showSuccessToast("Your Clocked Out")
+  } else {
+    const start = new Date().toISOString();
+    setStartTime(start);
+    todayAttendance("Working");
+    localStorage.setItem("clockInStartTime", start);
+    localStorage.setItem("clockInRunning", "true");
+    setClockInRunning(true);
+    showSuccessToast("Your Clocked In")
+  }
+}}
+
             className="bg-green-500 py-3 px-6 font-bold text-white rounded min-w-[140px]"
           >
             {clockInRunning ? "Clock Out" : "Clock In"}
           </button>
 
-          <button
-            onClick={() => setBreakRunning((prev) => !prev)}
-            className="bg-blue-700 py-3 px-6 font-bold text-white rounded min-w-[140px]"
-          >
-            {breakRunning ? "Pause Break" : "Start Break"}
-          </button>
+<button
+  onClick={() => {
+    if(!clockInRunning){
+      showErrorToast("First Clock In to Start a Break");
+      return;
+    }
+    setBreakRunning((prev) => {
+      const newState = !prev;
+
+      if (newState) {
+        updatetodayattendance("On Break", false);
+        const start = new Date().toISOString();
+        localStorage.setItem("breakStartTime", start);
+        localStorage.setItem("breakRunning", "true");
+        showSuccessToast("Enjoy Your Break")
+      } else {
+        updatetodayattendance("Working", false);
+        localStorage.removeItem("breakStartTime");
+        localStorage.setItem("breakRunning", "false");
+        showSuccessToast("Welcome Back")
+      }
+
+      return newState;
+    });
+  }}
+  className="bg-blue-700 py-3 px-6 font-bold text-white rounded min-w-[140px]"
+>
+  {breakRunning ? "Pause Break" : "Start Break"}
+</button>
+
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-        <StatCard icon={<Users className="h-6 w-6" />} title="Total Employees" value="120" />
-        <StatCard icon={<Building className="h-6 w-6" />} title="Departments" value="8" />
-        <StatCard icon={<CalendarCheck className="h-6 w-6" />} title="Pending Leaves" value="5" />
-        <StatCard icon={<ClipboardList className="h-6 w-6" />} title="Active Roles" value="15" />
-        <StatCard icon={<FileText className="h-6 w-6" />} title="Payroll Reports" value="12" />
-        <StatCard icon={<Users className="h-6 w-6" />} title="Today's Attendance" value="103" />
+       <StatCard
+  icon={<Users className="h-6 w-6" />}
+  title="Total Employees"
+  value={counts.userCount}
+/>
+<StatCard
+  icon={<Building className="h-6 w-6" />}
+  title="Departments"
+  value={counts.departmentCount}
+/>
+<StatCard
+  icon={<CalendarCheck className="h-6 w-6" />}
+  title="Today's Attendance"
+  value={counts.attendanceCount}
+/>
+
       </div>
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
         <div className="bg-white rounded-xl p-6 shadow">
-            <div className="mb-6">
-  <label className="block text-sm font-medium text-gray-700 mb-1">Select Month</label>
-  <select
-    value={selectedMonth}
-    onChange={(e) => setSelectedMonth(Number(e.target.value))}
-    className="p-2 border border-gray-300 rounded w-64"
-  >
-    {Array.from({ length: 12 }, (_, i) => (
-      <option key={i} value={i}>
-        {new Date(0, i).toLocaleString("default", { month: "long" })}
-      </option>
-    ))}
-  </select>
-</div>
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Select Month
+            </label>
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(Number(e.target.value))}
+              className="p-2 border border-gray-300 rounded w-64"
+            >
+              {Array.from({ length: 12 }, (_, i) => (
+                <option key={i} value={i}>
+                  {new Date(0, i).toLocaleString("default", { month: "long" })}
+                </option>
+              ))}
+            </select>
+          </div>
 
-          <h2 className="text-lg font-semibold mb-4">Monthly Clock vs Break Time</h2>
-         <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={chartData}>
-          <XAxis dataKey="day" />
-          <YAxis tickFormatter={formatSeconds} />
-          <Tooltip
-            formatter={(value) => formatSeconds(value)}
-            labelFormatter={(label) => `Day: ${label}`}
-          />
-          <Legend />
-          <Bar dataKey="clockTime" fill="#3B82F6" name="Clock Time" />
-          <Bar dataKey="breakTime" fill="#F59E0B" name="Break Time" />
-        </BarChart>
-      </ResponsiveContainer>
+          <h2 className="text-lg font-semibold mb-4">
+            Monthly Clock vs Break Time
+          </h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={chartData}>
+              <XAxis dataKey="day" />
+              <YAxis tickFormatter={formatSeconds} />
+              <Tooltip
+                formatter={(value) => formatSeconds(value)}
+                labelFormatter={(label) => `Day: ${label}`}
+              />
+              <Legend />
+              <Bar dataKey="clockTime" fill="#3B82F6" name="Clock Time" />
+              <Bar dataKey="breakTime" fill="#F59E0B" name="Break Time" />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
 
         <div className="bg-white rounded-xl p-6 shadow">
-          <h2 className="text-lg font-semibold mb-4">Employees by Department</h2>
+          <h2 className="text-lg font-semibold mb-4">
+            Employees by Department
+          </h2>
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie
                 data={departmentData}
-                dataKey="value"
-                nameKey="name"
+                dataKey="userCount"
+                nameKey="departmentName"
                 cx="50%"
                 cy="50%"
                 outerRadius={80}
@@ -253,34 +398,25 @@ useEffect(() => {
                 label
               >
                 {departmentData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={pieColors[index % pieColors.length]} />
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={pieColors[index % pieColors.length]}
+                  />
                 ))}
               </Pie>
               <Legend />
             </PieChart>
           </ResponsiveContainer>
+          
         </div>
       </div>
 
       {/* Management Sections */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <ManageCard
-          title="Manage Employees"
-          description="Add, edit, or remove employee records."
-        />
-        <ManageCard
-          title="Manage Departments & Roles"
-          description="Organize departments and define role-based permissions."
-        />
-        <ManageCard
-          title="Leave Approvals"
-          description="Review and approve/reject leave requests."
-        />
-        <ManageCard
-          title="Attendance & Payroll"
-          description="Generate attendance logs and payroll summaries."
-        />
-      </div>
+              <div className="bg-white rounded-xl p-6 shadow mb-10">
+
+              <AttendanceOwnCard/>
+              </div>
+     
     </div>
   );
 };

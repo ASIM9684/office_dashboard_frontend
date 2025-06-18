@@ -10,13 +10,23 @@ import DepartmentPage from './admin_panel/component/department/Department';
 import AddDepartmentForm from './admin_panel/component/department/AddDepartmentForm';
 import EditDepartmentForm from './admin_panel/component/department/EditDepartmentForm';
 import { jwtDecode } from 'jwt-decode';
+import Addleave from './admin_panel/component/leave/Addleave';
+import LeavePage from './admin_panel/component/leave/Leave';
+import Profile from './admin_panel/component/profile/Profile';
+import AttendanceCardList from './admin_panel/component/cards/AttendanceCard';
+import AttendanceOwnCard from './admin_panel/component/cards/AttendanceOwnCard';
+import ClockInToday from './admin_panel/component/ClockInToday';
+import AssignTask from './admin_panel/component/task/AssignTask';
+import Task from './admin_panel/component/task/Task';
+import { ToastContainer } from 'react-toastify';
+import RoleProtectedRoute from './admin_panel/utils/RoleProtectedRoute';
 
 const isAuthenticated = () => {
   const token = localStorage.getItem('token');
   if (!token) return false;
   try {
     const decoded = jwtDecode(token);
-    return decoded.exp * 1000 > Date.now(); // Check token expiry
+    return decoded.exp * 1000 > Date.now(); 
   } catch {
     return false;
   }
@@ -29,10 +39,9 @@ const PrivateRoute = ({ children }) => {
 function App() {
   return (
     <Router>
+           <ToastContainer />
       <Routes>
         <Route path="/login" element={<Login />} />
-
-        {/* Protected Routes */}
         <Route
           path="/"
           element={
@@ -41,54 +50,131 @@ function App() {
             </PrivateRoute>
           }
         />
-        <Route
-          path="/department"
+       <Route
+          path="/profile"
           element={
             <PrivateRoute>
-              <Layout><DepartmentPage /></Layout>
+              <Layout><Profile /></Layout>
             </PrivateRoute>
           }
         />
-        <Route
-          path="/add-department"
+         <Route
+          path="/Task"
           element={
             <PrivateRoute>
-              <Layout><AddDepartmentForm /></Layout>
+              <Layout><Task /></Layout>
             </PrivateRoute>
           }
         />
-        <Route
-          path="/edit-department"
+       <Route
+          path="/ClockInToday"
           element={
             <PrivateRoute>
-              <Layout><EditDepartmentForm /></Layout>
+              <Layout><ClockInToday /></Layout>
             </PrivateRoute>
           }
         />
-        <Route
-          path="/employees"
+       <Route
+          path="/AttendanceCardList/:id"
           element={
             <PrivateRoute>
-              <Layout><EmployeesPage /></Layout>
+              <Layout><AttendanceCardList /></Layout>
             </PrivateRoute>
           }
         />
-        <Route
-          path="/add-employee"
+       <Route
+          path="/add-leave"
           element={
             <PrivateRoute>
-              <Layout><AddEmployeeForm /></Layout>
+              <Layout><Addleave /></Layout>
             </PrivateRoute>
           }
         />
-        <Route
-          path="/edit-employee"
+                <Route
+          path="/leave"
           element={
             <PrivateRoute>
-              <Layout><EditEmployeeForm /></Layout>
+              <Layout><LeavePage /></Layout>
             </PrivateRoute>
           }
         />
+<Route
+  path="/AssignTask/:id"
+  element={
+    <PrivateRoute>
+      <RoleProtectedRoute allowedRoles={['Admin', 'HR']}>
+        <Layout><AssignTask /></Layout>
+      </RoleProtectedRoute>
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/department"
+  element={
+    <PrivateRoute>
+      <RoleProtectedRoute allowedRoles={['Admin', 'HR']}>
+        <Layout><DepartmentPage /></Layout>
+      </RoleProtectedRoute>
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/add-department"
+  element={
+    <PrivateRoute>
+      <RoleProtectedRoute allowedRoles={['Admin', 'HR']}>
+        <Layout><AddDepartmentForm /></Layout>
+      </RoleProtectedRoute>
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/edit-department"
+  element={
+    <PrivateRoute>
+      <RoleProtectedRoute allowedRoles={['Admin', 'HR']}>
+        <Layout><EditDepartmentForm /></Layout>
+      </RoleProtectedRoute>
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/employees"
+  element={
+    <PrivateRoute>
+      <RoleProtectedRoute allowedRoles={['Admin', 'HR']}>
+        <Layout><EmployeesPage /></Layout>
+      </RoleProtectedRoute>
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/add-employee"
+  element={
+    <PrivateRoute>
+      <RoleProtectedRoute allowedRoles={['Admin', 'HR']}>
+        <Layout><AddEmployeeForm /></Layout>
+      </RoleProtectedRoute>
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/edit-employee"
+  element={
+    <PrivateRoute>
+      <RoleProtectedRoute allowedRoles={['Admin', 'HR']}>
+        <Layout><EditEmployeeForm /></Layout>
+      </RoleProtectedRoute>
+    </PrivateRoute>
+  }
+/>
+
       </Routes>
     </Router>
   );

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { User, Pencil, Trash2, PlusCircle } from "lucide-react";
+import { User, Pencil, Trash2, PlusCircle, UserCog } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { showSuccessToast } from "../../utils/toast";
 
 export default function DepartmentPage() {
   const [Department, setDepartment] = useState([]);
@@ -10,7 +11,7 @@ export default function DepartmentPage() {
   useEffect(() => {
     const fetchDepartment = async () => {
       try {
-        const response = await axios.get("https://6c14ece9-c0bc-4b02-b5b0-b5526dc05b8e-00-bw55jwex1z46.sisko.replit.dev/getDepartments");
+        const response = await axios.get("http://192.168.18.15:8000/getDepartments");
         setDepartment(response.data);
       } catch (error) {
         console.error("Error fetching Department:", error);
@@ -22,9 +23,10 @@ export default function DepartmentPage() {
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this Deaprtment?")) {
       axios
-        .delete(`https://6c14ece9-c0bc-4b02-b5b0-b5526dc05b8e-00-bw55jwex1z46.sisko.replit.dev/deleteDepartment/${id}`)
+        .delete(`http://192.168.18.15:8000/deleteDepartment/${id}`)
         .then(() => {
           setDepartment((prev) => prev.filter((emp) => emp._id !== id));
+           showSuccessToast("Department Deleted Successfully")
         })
         .catch((error) => {
           console.error("Error deleting Department:", error);
@@ -45,7 +47,7 @@ export default function DepartmentPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
         <div className="flex items-center gap-2">
-          <User className="text-blue-600 w-6 h-6" />
+          <UserCog className="text-blue-600 w-6 h-6" />
           <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Department</h1>
         </div>
         <button

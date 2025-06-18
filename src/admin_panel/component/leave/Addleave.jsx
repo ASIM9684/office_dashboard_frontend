@@ -1,67 +1,79 @@
 import { useState } from "react";
 import { UserPlus } from "lucide-react";
 import axios from "axios";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 import { showSuccessToast } from "../../utils/toast";
 
-const EditDepartmentForm = () => {
-  const location = useLocation();
-  const departmentData = location.state?.Department;
-
-const navigate = useNavigate();
-  const [id,setId] = useState(departmentData?._id || "");
+const Addleave = () => {
   const [formData, setFormData] = useState({
-    name: departmentData?.name || ""
+    reason: "",
+    leaveDate: "",
   });
-
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
+    const token = localStorage.getItem("token");
+    const decoded = jwtDecode(token);
+    const userId = decoded.userId;
     e.preventDefault();
-    const response = axios.put(`http://192.168.18.15:8000/updateDepartment/${id}`, formData);
+    const response = axios.post(
+      `http://192.168.18.15:8000/addleave/${userId}`,
+      formData
+    );
     response
       .then((res) => {
         setFormData({
-          name: ""
+          leaveDate: "",
+          reason: "",
         });
-         showSuccessToast("Department Updated Successfully")
-        navigate("/department");
+         showSuccessToast("Leave Request Successfully")
+        navigate("/leave");
       })
       .catch((error) => {
-        console.error("Error adding department:", error);
+        console.error("Error adding leave:", error);
       });
-
   };
 
   return (
     <div className="max-w-5xl mx-auto p-6 mt-8 bg-white rounded-2xl shadow-lg">
       <div className="flex items-center gap-3 mb-6">
         <UserPlus className="text-blue-600 w-6 h-6" />
-        <h2 className="text-2xl font-bold text-gray-800">Add New Employee</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Add New leave</h2>
       </div>
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-6">
+      <form
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+      >
         {/* Name */}
         <FormInput
-          label="Full Name"
-          name="name"
+          label="Reason"
+          name="reason"
           type="text"
-          value={formData.name}
+          value={formData.reason}
           onChange={handleChange}
           required
         />
 
-
-        {/* Submit Button */}
+        <FormInput
+          label="Leave Date"
+          name="leaveDate"
+          type="date"
+          value={formData.leaveDate}
+          onChange={handleChange}
+          required
+        />
         <div className="md:col-span-2 text-right mt-2">
           <button
             type="submit"
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition duration-300"
           >
-            Update Department
+            Add leave
           </button>
         </div>
       </form>
@@ -71,7 +83,9 @@ const navigate = useNavigate();
 
 const FormInput = ({ label, ...props }) => (
   <div>
-    <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      {label}
+    </label>
     <input
       {...props}
       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
@@ -79,4 +93,4 @@ const FormInput = ({ label, ...props }) => (
   </div>
 );
 
-export default EditDepartmentForm;
+export default Addleave;
