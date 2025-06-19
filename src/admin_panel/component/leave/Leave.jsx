@@ -22,7 +22,7 @@ export default function LeavePage() {
   const fetchLeaves = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/getLeave", {
+      const response = await axios.get("http://192.168.18.15:8000/getLeave", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -36,7 +36,7 @@ export default function LeavePage() {
 
   const handleStatusChange = async (id, status) => {
     try {
-      await axios.put(`https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/updateLeave/${id}`, { status });
+      await axios.put(`http://192.168.18.15:8000/updateLeave/${id}`, { status });
       fetchLeaves();
       if(status == "Accepted"){
         showSuccessToast("Leave Request Accepted Successfully")

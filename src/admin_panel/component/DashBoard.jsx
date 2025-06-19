@@ -33,32 +33,36 @@ const Dashboard = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth()); // 0 = Jan, ..., 11 = Dec
   const [startTime, setStartTime] = useState(null);
   const [departmentData, setDepartmentData] = useState([]);
-const [counts, setCounts] = useState({
-  departmentCount: 0,
-  userCount: 0,
-  attendanceCount: 0,
-});
+  const [counts, setCounts] = useState({
+    departmentCount: 0,
+    userCount: 0,
+    attendanceCount: 0,
+  });
 
-useEffect(() => {
-  const fetchCounts = async () => {
-    try {
-      const res = await axios.get("https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/getDashboardCounts");
-      setCounts(res.data);
-    } catch (err) {
-      console.error("Failed to fetch dashboard counts", err);
-    }
-  };
-const fetchdepartmentData = async () => {
-  try {
-    const res = await axios.get("https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/getUserCountByDepartment");
-    setDepartmentData(res.data);
-  } catch (err) {
-    console.error("Failed to fetch department data", err);
-  }
-};
-  fetchdepartmentData();
-  fetchCounts();
-}, []);
+  useEffect(() => {
+    const fetchCounts = async () => {
+      try {
+        const res = await axios.get(
+          "http://192.168.18.15:8000/getDashboardCounts"
+        );
+        setCounts(res.data);
+      } catch (err) {
+        console.error("Failed to fetch dashboard counts", err);
+      }
+    };
+    const fetchdepartmentData = async () => {
+      try {
+        const res = await axios.get(
+          "http://192.168.18.15:8000/getUserCountByDepartment"
+        );
+        setDepartmentData(res.data);
+      } catch (err) {
+        console.error("Failed to fetch department data", err);
+      }
+    };
+    fetchdepartmentData();
+    fetchCounts();
+  }, []);
 
   useEffect(() => {
     const fetchAttendanceData = async () => {
@@ -67,7 +71,7 @@ const fetchdepartmentData = async () => {
         const decoded = jwtDecode(token);
         const userId = decoded.userId;
         const res = await fetch(
-          `https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/getAttendenceById/${userId}`
+          `http://192.168.18.15:8000/getAttendenceById/${userId}`
         );
         const data = await res.json();
         if (res.ok) {
@@ -96,15 +100,21 @@ const fetchdepartmentData = async () => {
     });
 
     const formatted = filtered.map((entry) => {
-      const clockTimeStr = typeof entry.clockTime === "string" ? entry.clockTime : "00:00:00";
-      const breakTimeStr = typeof entry.breakTime === "string" ? entry.breakTime : "00:00:00";
+      const clockTimeStr =
+        typeof entry.clockTime === "string" ? entry.clockTime : "00:00:00";
+      const breakTimeStr =
+        typeof entry.breakTime === "string" ? entry.breakTime : "00:00:00";
       return {
         day: new Date(entry.createdAt).toLocaleDateString("default", {
           day: "numeric",
           month: "short",
         }),
-        clockTime: /^\d{2}:\d{2}:\d{2}$/.test(clockTimeStr) ? toSeconds(clockTimeStr) : 0,
-        breakTime: /^\d{2}:\d{2}:\d{2}$/.test(breakTimeStr) ? toSeconds(breakTimeStr) : 0,
+        clockTime: /^\d{2}:\d{2}:\d{2}$/.test(clockTimeStr)
+          ? toSeconds(clockTimeStr)
+          : 0,
+        breakTime: /^\d{2}:\d{2}:\d{2}$/.test(breakTimeStr)
+          ? toSeconds(breakTimeStr)
+          : 0,
       };
     });
 
@@ -118,37 +128,36 @@ const fetchdepartmentData = async () => {
     return `${h}:${m}:${s}`;
   };
 
-const submitAttendance = async () => {
-  const clockTimeStr = formatTime(clockInTime);
-  const breakTimeStr = formatTime(breakTime);
-  const endTime = new Date().toISOString();
+  const submitAttendance = async () => {
+    const clockTimeStr = formatTime(clockInTime);
+    const breakTimeStr = formatTime(breakTime);
+    const endTime = new Date().toISOString();
 
-  try {
-    const token = localStorage.getItem("token");
-    const decoded = jwtDecode(token);
-    const userId = decoded.userId;
+    try {
+      const token = localStorage.getItem("token");
+      const decoded = jwtDecode(token);
+      const userId = decoded.userId;
 
-    const res = await fetch("https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/addAttendance", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        clockTime: clockTimeStr,
-        breakTime: breakTimeStr,
-        userId,
-        startTime,
-        endTime,
-      }),
-    });
+      const res = await fetch("http://192.168.18.15:8000/addAttendance", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          clockTime: clockTimeStr,
+          breakTime: breakTimeStr,
+          userId,
+          startTime,
+          endTime,
+        }),
+      });
 
-    const data = await res.json();
-  } catch (err) {
-    console.error("Error submitting attendance:", err);
-    alert("Server error");
-  }
-};
-
+      const data = await res.json();
+    } catch (err) {
+      console.error("Error submitting attendance:", err);
+      alert("Server error");
+    }
+  };
 
   useEffect(() => {
     let clockInInterval;
@@ -182,74 +191,103 @@ const submitAttendance = async () => {
   };
 
   useEffect(() => {
-  const storedClockInStart = localStorage.getItem("clockInStartTime");
-  const storedBreakStart = localStorage.getItem("breakStartTime");
+    const storedClockInStart = localStorage.getItem("clockInStartTime");
+    const storedBreakStart = localStorage.getItem("breakStartTime");
 
-  const isClockInRunning = localStorage.getItem("clockInRunning") === "true";
-  const isBreakRunning = localStorage.getItem("breakRunning") === "true";
+    const isClockInRunning = localStorage.getItem("clockInRunning") === "true";
+    const isBreakRunning = localStorage.getItem("breakRunning") === "true";
 
-  if (isClockInRunning && storedClockInStart) {
-    const elapsed = Math.floor((Date.now() - new Date(storedClockInStart)) / 1000);
-    setClockInTime(elapsed);
-    setStartTime(storedClockInStart);
-    setClockInRunning(true);
-  }
-
-  if (isBreakRunning && storedBreakStart) {
-    const elapsed = Math.floor((Date.now() - new Date(storedBreakStart)) / 1000);
-    setBreakTime(elapsed);
-    setBreakRunning(true);
-  }
-}, []);
-
-const todayAttendance = (status) => {
-    const token = localStorage.getItem("token");
-        const decoded = jwtDecode(token);
-        const userId = decoded.userId;
-          const start = new Date().toISOString();
- axios.post(
-  `https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/addTodayAttendance`,{
-    userId,
-    startTime : start,
-    status
-  })
-    .then((res) => {
-      if (res.status === 201) {
-        localStorage.setItem("attendanceId", res.data.attendance._id);
-        
-      } else {
-        console.error("Failed to submit attendance:", res.data.message);
-      }
-    })
-    .catch((error) => {
-      console.error("Error submitting attendance:", error);
-    });
-}
-
-const updatetodayattendance = async (status, shouldSetEndTime = false) => {
-  try {
-    const attendanceId = localStorage.getItem("attendanceId");
-    if (!attendanceId) {
-      console.error("No attendance ID found in localStorage");
-      return;
+    if (isClockInRunning && storedClockInStart) {
+      const elapsed = Math.floor(
+        (Date.now() - new Date(storedClockInStart)) / 1000
+      );
+      setClockInTime(elapsed);
+      setStartTime(storedClockInStart);
+      setClockInRunning(true);
     }
 
-    const endTime = shouldSetEndTime ? new Date().toISOString() : null;
+    if (isBreakRunning && storedBreakStart) {
+      const elapsed = Math.floor(
+        (Date.now() - new Date(storedBreakStart)) / 1000
+      );
+      setBreakTime(elapsed);
+      setBreakRunning(true);
+    }
+  }, []);
 
-    const res = await axios.put(
-      `https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/updatetodayattendance/${attendanceId}`,
-      {
+  const todayAttendance = (status) => {
+    const token = localStorage.getItem("token");
+    const decoded = jwtDecode(token);
+    const userId = decoded.userId;
+    const start = new Date().toISOString();
+    axios
+      .post(`http://192.168.18.15:8000/addTodayAttendance`, {
+        userId,
+        startTime: start,
         status,
-        endTime,
-      }
-    );
+      })
+      .then((res) => {
+        if (res.status === 201) {
+          localStorage.setItem("attendanceId", res.data.attendance._id);
+        } else {
+          console.error("Failed to submit attendance:", res.data.message);
+        }
+      })
+      .catch((error) => {
+        console.error("Error submitting attendance:", error);
+      });
+  };
 
-  
-  } catch (error) {
-    console.error("Error updating attendance:", error);
-  }
-};
+  const updatetodayattendance = async (status, shouldSetEndTime = false) => {
+    try {
+      const attendanceId = localStorage.getItem("attendanceId");
+      if (!attendanceId) {
+        console.error("No attendance ID found in localStorage");
+        return;
+      }
+
+      const endTime = shouldSetEndTime ? new Date().toISOString() : null;
+
+      const res = await axios.put(
+        `http://192.168.18.15:8000/updatetodayattendance/${attendanceId}`,
+        {
+          status,
+          endTime,
+        }
+      );
+    } catch (error) {
+      console.error("Error updating attendance:", error);
+    }
+  };
   const pieColors = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444"];
+
+  const [pendingTasks, setPendingTasks] = useState([]);
+  const [errorAttendance, setErrorAttendance] = useState([]);
+  useEffect(() => {
+    const fetchTask = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const decoded = jwtDecode(token);
+        const userId = decoded.userId;
+        const response = await axios.get(
+          `http://192.168.18.15:8000/getPendingTasksByUser/${userId}`
+        );
+        setPendingTasks(response.data);
+      } catch (error) {
+        console.log("Error Fetching Pending Task", error);
+      }
+    };
+    const fetchErrorAttendance = async () => {
+      const response = await axios.get(
+        `http://192.168.18.15:8000/ErrorAttendance`
+      );
+      console.log(response.data);
+      setErrorAttendance(response.data)
+      
+    };
+    fetchErrorAttendance();
+    fetchTask();
+  }, []);
 
   return (
     <div className="p-4">
@@ -263,86 +301,164 @@ const updatetodayattendance = async (status, shouldSetEndTime = false) => {
 
         <div className="flex gap-x-5">
           <button
-onClick={() => {
-  if (clockInRunning) {
-    submitAttendance();
-    updatetodayattendance("Clock Out", true);
-    localStorage.removeItem("attendanceId");
-    setClockInRunning(false);
-    setBreakRunning(false);
-    localStorage.removeItem("clockInStartTime");
-    localStorage.removeItem("clockInRunning");
-    localStorage.removeItem("breakStartTime");
-    localStorage.removeItem("breakRunning");
-    showSuccessToast("Your Clocked Out")
-  } else {
-    const start = new Date().toISOString();
-    setStartTime(start);
-    todayAttendance("Working");
-    localStorage.setItem("clockInStartTime", start);
-    localStorage.setItem("clockInRunning", "true");
-    setClockInRunning(true);
-    showSuccessToast("Your Clocked In")
-  }
-}}
-
+            onClick={() => {
+              if (clockInRunning) {
+                submitAttendance();
+                updatetodayattendance("Clock Out", true);
+                localStorage.removeItem("attendanceId");
+                setClockInRunning(false);
+                setBreakRunning(false);
+                localStorage.removeItem("clockInStartTime");
+                localStorage.removeItem("clockInRunning");
+                localStorage.removeItem("breakStartTime");
+                localStorage.removeItem("breakRunning");
+                showSuccessToast("Your Clocked Out");
+              } else {
+                const start = new Date().toISOString();
+                setStartTime(start);
+                todayAttendance("Working");
+                localStorage.setItem("clockInStartTime", start);
+                localStorage.setItem("clockInRunning", "true");
+                setClockInRunning(true);
+                showSuccessToast("Your Clocked In");
+              }
+            }}
             className="bg-green-500 py-3 px-6 font-bold text-white rounded min-w-[140px]"
           >
             {clockInRunning ? "Clock Out" : "Clock In"}
           </button>
 
-<button
-  onClick={() => {
-    if(!clockInRunning){
-      showErrorToast("First Clock In to Start a Break");
-      return;
-    }
-    setBreakRunning((prev) => {
-      const newState = !prev;
+          <button
+            onClick={() => {
+              if (!clockInRunning) {
+                showErrorToast("First Clock In to Start a Break");
+                return;
+              }
+              setBreakRunning((prev) => {
+                const newState = !prev;
 
-      if (newState) {
-        updatetodayattendance("On Break", false);
-        const start = new Date().toISOString();
-        localStorage.setItem("breakStartTime", start);
-        localStorage.setItem("breakRunning", "true");
-        showSuccessToast("Enjoy Your Break")
-      } else {
-        updatetodayattendance("Working", false);
-        localStorage.removeItem("breakStartTime");
-        localStorage.setItem("breakRunning", "false");
-        showSuccessToast("Welcome Back")
-      }
+                if (newState) {
+                  updatetodayattendance("On Break", false);
+                  const start = new Date().toISOString();
+                  localStorage.setItem("breakStartTime", start);
+                  localStorage.setItem("breakRunning", "true");
+                  showSuccessToast("Enjoy Your Break");
+                } else {
+                  updatetodayattendance("Working", false);
+                  localStorage.removeItem("breakStartTime");
+                  localStorage.setItem("breakRunning", "false");
+                  showSuccessToast("Welcome Back");
+                }
 
-      return newState;
-    });
-  }}
-  className="bg-blue-700 py-3 px-6 font-bold text-white rounded min-w-[140px]"
->
-  {breakRunning ? "Pause Break" : "Start Break"}
-</button>
-
+                return newState;
+              });
+            }}
+            className="bg-blue-700 py-3 px-6 font-bold text-white rounded min-w-[140px]"
+          >
+            {breakRunning ? "Pause Break" : "Start Break"}
+          </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-       <StatCard
-  icon={<Users className="h-6 w-6" />}
-  title="Total Employees"
-  value={counts.userCount}
-/>
-<StatCard
-  icon={<Building className="h-6 w-6" />}
-  title="Departments"
-  value={counts.departmentCount}
-/>
-<StatCard
-  icon={<CalendarCheck className="h-6 w-6" />}
-  title="Today's Attendance"
-  value={counts.attendanceCount}
-/>
+        <StatCard
+          icon={<Users className="h-6 w-6" />}
+          title="Total Employees"
+          value={counts.userCount}
+        />
+        <StatCard
+          icon={<Building className="h-6 w-6" />}
+          title="Departments"
+          value={counts.departmentCount}
+        />
+        <StatCard
+          icon={<CalendarCheck className="h-6 w-6" />}
+          title="Today's Attendance"
+          value={counts.attendanceCount}
+        />
+      </div>
+      {/* Pending Tasks */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
+        <div className="p-6 bg-white shadow-md rounded-xl">
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">
+          🕐 Pending Tasks
+        </h2>
+        {pendingTasks.length === 0 ? (
+          <p className="text-gray-500">No pending tasks.</p>
+        ) : (
+          <ul className="space-y-3">
+            {pendingTasks.map((task, idx) => (
+              <li key={idx} className="p-4 bg-gray-100 rounded-lg">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="font-medium text-gray-800">{task.task}</span>
+                  <span className="text-sm text-gray-500">
+                    {new Date(task.createdAt).toLocaleString("en-GB", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true,
+                    })}
+                  </span>
+                </div>
+                <div className="text-sm text-gray-600">
+                  Assigned by: {task.assignedBy?.name || "Unknown"}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+        </div>
+        <div className="bg-white shadow-md rounded-xl p-6">
+  <h2 className="text-xl font-semibold mb-4 text-red-600">
+    ❌ Error Attendance
+  </h2>
+  {errorAttendance.length === 0 ? (
+    <p className="text-gray-500">No attendance errors.</p>
+  ) : (
+    <ul className="space-y-2">
+      {errorAttendance.map((entry, idx) => {
+        const start = new Date(entry.startTime);
+        const end = entry.status === "Clocked Out" && entry.endTime
+          ? new Date(entry.endTime)
+          : new Date(); // use current time if not clocked out
+
+        const durationMs = end - start;
+        const hours = Math.floor(durationMs / (1000 * 60 * 60));
+        const minutes = Math.floor((durationMs / (1000 * 60)) % 60);
+
+        return (
+          <li key={idx} className="p-3 bg-red-100 rounded-lg">
+            <div className="flex justify-between">
+              <span className="font-medium">{entry.userId?.name || "Unknown"}</span>
+              <span className="text-sm text-gray-700">
+                {new Date(entry.startTime).toLocaleString("en-GB", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })}
+              </span>
+            </div>
+            <div className="text-sm text-gray-600">
+              Issue: Hasn't Clocked Out
+            </div>
+            <div className="text-sm text-gray-700">
+              Duration: {hours}h {minutes}m
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  )}
+</div>
 
       </div>
 
+{/* Error Attendance */}
       {/* Charts Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
         <div className="bg-white rounded-xl p-6 shadow">
@@ -407,16 +523,13 @@ onClick={() => {
               <Legend />
             </PieChart>
           </ResponsiveContainer>
-          
         </div>
       </div>
 
       {/* Management Sections */}
-              <div className="bg-white rounded-xl p-6 shadow mb-10">
-
-              <AttendanceOwnCard/>
-              </div>
-     
+      <div className="bg-white rounded-xl p-6 shadow mb-10">
+        <AttendanceOwnCard />
+      </div>
     </div>
   );
 };

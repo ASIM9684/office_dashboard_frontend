@@ -11,7 +11,7 @@ export default function DepartmentPage() {
   useEffect(() => {
     const fetchDepartment = async () => {
       try {
-        const response = await axios.get("https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/getDepartments");
+        const response = await axios.get("http://192.168.18.15:8000/getDepartments");
         setDepartment(response.data);
       } catch (error) {
         console.error("Error fetching Department:", error);
@@ -23,7 +23,7 @@ export default function DepartmentPage() {
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this Deaprtment?")) {
       axios
-        .delete(`https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/deleteDepartment/${id}`)
+        .delete(`http://192.168.18.15:8000/deleteDepartment/${id}`)
         .then(() => {
           setDepartment((prev) => prev.filter((emp) => emp._id !== id));
            showSuccessToast("Department Deleted Successfully")

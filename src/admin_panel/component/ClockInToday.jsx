@@ -12,7 +12,7 @@ export default function ClockInToday() {
     const fetchEmployees = async () => {
       try {
         const response = await axios.get(
-          `https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/ClockInNow`
+          `http://192.168.18.15:8000/ClockInNow`
         );
         setEmployees(response.data);
       } catch (error) {
@@ -42,6 +42,7 @@ export default function ClockInToday() {
               <th className="py-3 px-4">Clock In</th>
               <th className="py-3 px-4">Clock Out</th>
               <th className="py-3 px-4">Status</th>
+              <th className="py-3 px-4">Device</th>
             </tr>
           </thead>
           <tbody>
@@ -62,6 +63,7 @@ export default function ClockInToday() {
                     : "-"}
                 </td>
                 <td className="py-3 px-4">{emp.status}</td>
+                     <td className="py-3 px-4">{emp.deviceType}</td>
               </tr>
             ))}
             {employees.length === 0 && (
@@ -98,7 +100,10 @@ export default function ClockInToday() {
                 {emp.endTime ? new Date(emp.endTime).toLocaleTimeString() : "-"}
               </div>
               <div className="text-sm text-gray-600">
-                <strong>Clock:</strong> {emp.status}
+                <strong>Status:</strong> {emp.status}
+              </div>
+              <div className="text-sm text-gray-600">
+                <strong>Device:</strong> {emp.deviceType}
               </div>
             </div>
           ))
