@@ -20,7 +20,7 @@ export default function Task() {
         const decoded = jwtDecode(token);
         const userId = decoded.userId;
       try {
-        const response = await axios.get(`https://f1fb010f-911a-4546-a853-c7be224e72ae-00-2femznmk9skxa.pike.replit.dev/getTasksByUser/${userId}`);
+        const response = await axios.get(`https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/getTasksByUser/${userId}`);
         setEmployees(response.data);
         
       } catch (error) {
@@ -31,7 +31,7 @@ export default function Task() {
 
   const handleStatus = async(id) => {
 try {
-await axios.put(`https://f1fb010f-911a-4546-a853-c7be224e72ae-00-2femznmk9skxa.pike.replit.dev/updateTask/${id}`);
+await axios.put(`https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/updateTask/${id}`);
 fetchEmployees();
   showSuccessToast("Task Submit Successfully")
 } catch (error) {

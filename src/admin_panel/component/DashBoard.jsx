@@ -43,7 +43,7 @@ const Dashboard = () => {
     const fetchCounts = async () => {
       try {
         const res = await axios.get(
-          "https://f1fb010f-911a-4546-a853-c7be224e72ae-00-2femznmk9skxa.pike.replit.dev/getDashboardCounts"
+          "https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/getDashboardCounts"
         );
         setCounts(res.data);
       } catch (err) {
@@ -53,7 +53,7 @@ const Dashboard = () => {
     const fetchdepartmentData = async () => {
       try {
         const res = await axios.get(
-          "https://f1fb010f-911a-4546-a853-c7be224e72ae-00-2femznmk9skxa.pike.replit.dev/getUserCountByDepartment"
+          "https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/getUserCountByDepartment"
         );
         setDepartmentData(res.data);
       } catch (err) {
@@ -71,7 +71,7 @@ const Dashboard = () => {
         const decoded = jwtDecode(token);
         const userId = decoded.userId;
         const res = await fetch(
-          `https://f1fb010f-911a-4546-a853-c7be224e72ae-00-2femznmk9skxa.pike.replit.dev/getAttendenceById/${userId}`
+          `https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/getAttendenceById/${userId}`
         );
         const data = await res.json();
         if (res.ok) {
@@ -139,7 +139,7 @@ const Dashboard = () => {
       const userId = decoded.userId;
 
       const res = await fetch(
-        "https://f1fb010f-911a-4546-a853-c7be224e72ae-00-2femznmk9skxa.pike.replit.dev/addAttendance",
+        "https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/addAttendance",
         {
           method: "POST",
           headers: {
@@ -225,7 +225,7 @@ const Dashboard = () => {
     const start = new Date().toISOString();
     axios
       .post(
-        `https://f1fb010f-911a-4546-a853-c7be224e72ae-00-2femznmk9skxa.pike.replit.dev/addTodayAttendance`,
+        `https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/addTodayAttendance`,
         {
           userId,
           startTime: start,
@@ -255,7 +255,7 @@ const Dashboard = () => {
       const endTime = shouldSetEndTime ? new Date().toISOString() : null;
 
       const res = await axios.put(
-        `https://f1fb010f-911a-4546-a853-c7be224e72ae-00-2femznmk9skxa.pike.replit.dev/updatetodayattendance/${attendanceId}`,
+        `https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/updatetodayattendance/${attendanceId}`,
         {
           status,
           endTime,
@@ -276,7 +276,7 @@ const Dashboard = () => {
         const decoded = jwtDecode(token);
         const userId = decoded.userId;
         const response = await axios.get(
-          `https://f1fb010f-911a-4546-a853-c7be224e72ae-00-2femznmk9skxa.pike.replit.dev/getPendingTasksByUser/${userId}`
+          `https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/getPendingTasksByUser/${userId}`
         );
         setPendingTasks(response.data);
       } catch (error) {
@@ -286,7 +286,7 @@ const Dashboard = () => {
     const fetchErrorAttendance = async () => {
       try {
         const response = await axios.get(
-          `https://f1fb010f-911a-4546-a853-c7be224e72ae-00-2femznmk9skxa.pike.replit.dev/ErrorAttendance`
+          `https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/ErrorAttendance`
         );
         setErrorAttendance(response.data);
       } catch (error) {

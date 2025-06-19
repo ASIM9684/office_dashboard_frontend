@@ -21,7 +21,7 @@ const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const response = axios.put(`https://f1fb010f-911a-4546-a853-c7be224e72ae-00-2femznmk9skxa.pike.replit.dev/updateDepartment/${id}`, formData);
+    const response = axios.put(`https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/updateDepartment/${id}`, formData);
     response
       .then((res) => {
         setFormData({
