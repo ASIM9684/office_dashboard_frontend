@@ -20,7 +20,7 @@ const Login = () => {
     setError("");
 
     try {
-      const res = await axios.post("http://192.168.18.15:8000/login", formData);
+      const res = await axios.post("https://f1fb010f-911a-4546-a853-c7be224e72ae-00-2femznmk9skxa.pike.replit.dev/login", formData);
       localStorage.setItem("token", res.data.token);
       navigate("/");
     } catch (err) {

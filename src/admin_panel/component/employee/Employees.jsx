@@ -11,7 +11,7 @@ export default function EmployeesPage() {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const response = await axios.get("http://192.168.18.15:8000/getEmployee");
+        const response = await axios.get("https://f1fb010f-911a-4546-a853-c7be224e72ae-00-2femznmk9skxa.pike.replit.dev/getEmployee");
         setEmployees(response.data);
         
       } catch (error) {
@@ -24,7 +24,7 @@ export default function EmployeesPage() {
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this employee?")) {
       axios
-        .delete(`http://192.168.18.15:8000/deleteEmployee/${id}`)
+        .delete(`https://f1fb010f-911a-4546-a853-c7be224e72ae-00-2femznmk9skxa.pike.replit.dev/deleteEmployee/${id}`)
         .then(() => {
           setEmployees((prev) => prev.filter((emp) => emp._id !== id));
               showSuccessToast("Employee Deleted Successfully")

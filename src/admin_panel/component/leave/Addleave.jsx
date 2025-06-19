@@ -22,7 +22,7 @@ const Addleave = () => {
     const userId = decoded.userId;
     e.preventDefault();
     const response = axios.post(
-      `http://192.168.18.15:8000/addleave/${userId}`,
+      `https://f1fb010f-911a-4546-a853-c7be224e72ae-00-2femznmk9skxa.pike.replit.dev/addleave/${userId}`,
       formData
     );
     response

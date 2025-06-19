@@ -23,7 +23,7 @@ const navigate = useNavigate();
       assignedTo : id,
       status : status
     }
-  const response = axios.post(`http://192.168.18.15:8000/assignTask`,form);
+  const response = axios.post(`https://f1fb010f-911a-4546-a853-c7be224e72ae-00-2femznmk9skxa.pike.replit.dev/assignTask`,form);
     response
       .then((res) => {
           showSuccessToast("Task Assigned Successfully")

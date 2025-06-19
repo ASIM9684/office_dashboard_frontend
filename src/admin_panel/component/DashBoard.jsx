@@ -43,7 +43,7 @@ const Dashboard = () => {
     const fetchCounts = async () => {
       try {
         const res = await axios.get(
-          "http://192.168.18.15:8000/getDashboardCounts"
+          "https://f1fb010f-911a-4546-a853-c7be224e72ae-00-2femznmk9skxa.pike.replit.dev/getDashboardCounts"
         );
         setCounts(res.data);
       } catch (err) {
@@ -53,7 +53,7 @@ const Dashboard = () => {
     const fetchdepartmentData = async () => {
       try {
         const res = await axios.get(
-          "http://192.168.18.15:8000/getUserCountByDepartment"
+          "https://f1fb010f-911a-4546-a853-c7be224e72ae-00-2femznmk9skxa.pike.replit.dev/getUserCountByDepartment"
         );
         setDepartmentData(res.data);
       } catch (err) {
@@ -71,7 +71,7 @@ const Dashboard = () => {
         const decoded = jwtDecode(token);
         const userId = decoded.userId;
         const res = await fetch(
-          `http://192.168.18.15:8000/getAttendenceById/${userId}`
+          `https://f1fb010f-911a-4546-a853-c7be224e72ae-00-2femznmk9skxa.pike.replit.dev/getAttendenceById/${userId}`
         );
         const data = await res.json();
         if (res.ok) {
@@ -138,19 +138,22 @@ const Dashboard = () => {
       const decoded = jwtDecode(token);
       const userId = decoded.userId;
 
-      const res = await fetch("http://192.168.18.15:8000/addAttendance", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          clockTime: clockTimeStr,
-          breakTime: breakTimeStr,
-          userId,
-          startTime,
-          endTime,
-        }),
-      });
+      const res = await fetch(
+        "https://f1fb010f-911a-4546-a853-c7be224e72ae-00-2femznmk9skxa.pike.replit.dev/addAttendance",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            clockTime: clockTimeStr,
+            breakTime: breakTimeStr,
+            userId,
+            startTime,
+            endTime,
+          }),
+        }
+      );
 
       const data = await res.json();
     } catch (err) {
@@ -221,11 +224,14 @@ const Dashboard = () => {
     const userId = decoded.userId;
     const start = new Date().toISOString();
     axios
-      .post(`http://192.168.18.15:8000/addTodayAttendance`, {
-        userId,
-        startTime: start,
-        status,
-      })
+      .post(
+        `https://f1fb010f-911a-4546-a853-c7be224e72ae-00-2femznmk9skxa.pike.replit.dev/addTodayAttendance`,
+        {
+          userId,
+          startTime: start,
+          status,
+        }
+      )
       .then((res) => {
         if (res.status === 201) {
           localStorage.setItem("attendanceId", res.data.attendance._id);
@@ -249,7 +255,7 @@ const Dashboard = () => {
       const endTime = shouldSetEndTime ? new Date().toISOString() : null;
 
       const res = await axios.put(
-        `http://192.168.18.15:8000/updatetodayattendance/${attendanceId}`,
+        `https://f1fb010f-911a-4546-a853-c7be224e72ae-00-2femznmk9skxa.pike.replit.dev/updatetodayattendance/${attendanceId}`,
         {
           status,
           endTime,
@@ -270,7 +276,7 @@ const Dashboard = () => {
         const decoded = jwtDecode(token);
         const userId = decoded.userId;
         const response = await axios.get(
-          `http://192.168.18.15:8000/getPendingTasksByUser/${userId}`
+          `https://f1fb010f-911a-4546-a853-c7be224e72ae-00-2femznmk9skxa.pike.replit.dev/getPendingTasksByUser/${userId}`
         );
         setPendingTasks(response.data);
       } catch (error) {
@@ -278,12 +284,14 @@ const Dashboard = () => {
       }
     };
     const fetchErrorAttendance = async () => {
-      const response = await axios.get(
-        `http://192.168.18.15:8000/ErrorAttendance`
-      );
-      console.log(response.data);
-      setErrorAttendance(response.data)
-      
+      try {
+        const response = await axios.get(
+          `https://f1fb010f-911a-4546-a853-c7be224e72ae-00-2femznmk9skxa.pike.replit.dev/ErrorAttendance`
+        );
+        setErrorAttendance(response.data);
+      } catch (error) {
+        console.log("Error Fetching Attendance", error);
+      }
     };
     fetchErrorAttendance();
     fetchTask();
@@ -380,85 +388,89 @@ const Dashboard = () => {
       {/* Pending Tasks */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
         <div className="p-6 bg-white shadow-md rounded-xl">
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">
-          🕐 Pending Tasks
-        </h2>
-        {pendingTasks.length === 0 ? (
-          <p className="text-gray-500">No pending tasks.</p>
-        ) : (
-          <ul className="space-y-3">
-            {pendingTasks.map((task, idx) => (
-              <li key={idx} className="p-4 bg-gray-100 rounded-lg">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="font-medium text-gray-800">{task.task}</span>
-                  <span className="text-sm text-gray-500">
-                    {new Date(task.createdAt).toLocaleString("en-GB", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: true,
-                    })}
-                  </span>
-                </div>
-                <div className="text-sm text-gray-600">
-                  Assigned by: {task.assignedBy?.name || "Unknown"}
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">
+            🕐 Pending Tasks
+          </h2>
+          {pendingTasks.length === 0 ? (
+            <p className="text-gray-500">No pending tasks.</p>
+          ) : (
+            <ul className="space-y-3">
+              {pendingTasks.map((task, idx) => (
+                <li key={idx} className="p-4 bg-gray-100 rounded-lg">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="font-medium text-gray-800">
+                      {task.task}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      {new Date(task.createdAt).toLocaleString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      })}
+                    </span>
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    Assigned by: {task.assignedBy?.name || "Unknown"}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
         <div className="bg-white shadow-md rounded-xl p-6">
-  <h2 className="text-xl font-semibold mb-4 text-red-600">
-    ❌ Error Attendance
-  </h2>
-  {errorAttendance.length === 0 ? (
-    <p className="text-gray-500">No attendance errors.</p>
-  ) : (
-    <ul className="space-y-2">
-      {errorAttendance.map((entry, idx) => {
-        const start = new Date(entry.startTime);
-        const end = entry.status === "Clocked Out" && entry.endTime
-          ? new Date(entry.endTime)
-          : new Date(); // use current time if not clocked out
+          <h2 className="text-xl font-semibold mb-4 text-red-600">
+            ❌ Error Attendance
+          </h2>
+          {errorAttendance.length === 0 ? (
+            <p className="text-gray-500">No attendance errors.</p>
+          ) : (
+            <ul className="space-y-2">
+              {errorAttendance.map((entry, idx) => {
+                const start = new Date(entry.startTime);
+                const end =
+                  entry.status === "Clocked Out" && entry.endTime
+                    ? new Date(entry.endTime)
+                    : new Date(); // use current time if not clocked out
 
-        const durationMs = end - start;
-        const hours = Math.floor(durationMs / (1000 * 60 * 60));
-        const minutes = Math.floor((durationMs / (1000 * 60)) % 60);
+                const durationMs = end - start;
+                const hours = Math.floor(durationMs / (1000 * 60 * 60));
+                const minutes = Math.floor((durationMs / (1000 * 60)) % 60);
 
-        return (
-          <li key={idx} className="p-3 bg-red-100 rounded-lg">
-            <div className="flex justify-between">
-              <span className="font-medium">{entry.userId?.name || "Unknown"}</span>
-              <span className="text-sm text-gray-700">
-                {new Date(entry.startTime).toLocaleString("en-GB", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                })}
-              </span>
-            </div>
-            <div className="text-sm text-gray-600">
-              Issue: Hasn't Clocked Out
-            </div>
-            <div className="text-sm text-gray-700">
-              Duration: {hours}h {minutes}m
-            </div>
-          </li>
-        );
-      })}
-    </ul>
-  )}
-</div>
-
+                return (
+                  <li key={idx} className="p-3 bg-red-100 rounded-lg">
+                    <div className="flex justify-between">
+                      <span className="font-medium">
+                        {entry.userId?.name || "Unknown"}
+                      </span>
+                      <span className="text-sm text-gray-700">
+                        {new Date(entry.startTime).toLocaleString("en-GB", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: true,
+                        })}
+                      </span>
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      Issue: Hasn't Clocked Out
+                    </div>
+                    <div className="text-sm text-gray-700">
+                      Duration: {hours}h {minutes}m
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
       </div>
 
-{/* Error Attendance */}
+      {/* Error Attendance */}
       {/* Charts Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
         <div className="bg-white rounded-xl p-6 shadow">
