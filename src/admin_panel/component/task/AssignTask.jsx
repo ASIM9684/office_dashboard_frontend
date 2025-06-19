@@ -23,7 +23,7 @@ const navigate = useNavigate();
       assignedTo : id,
       status : status
     }
-  const response = axios.post(`https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev//assignTask`,form);
+  const response = axios.post(`https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/assignTask`,form);
     response
       .then((res) => {
           showSuccessToast("Task Assigned Successfully")

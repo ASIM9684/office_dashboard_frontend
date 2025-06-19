@@ -27,7 +27,7 @@ const Profile = () => {
       if (token) {
         const decodedToken = jwtDecode(token);  
         const response = await axios.get(
-          `https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev//getUserProfile/${decodedToken.userId}`
+          `https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/getUserProfile/${decodedToken.userId}`
         );   
         setUser(response.data);
       }
@@ -36,8 +36,8 @@ const Profile = () => {
     const fetchData = async () => {
       try {
         const [deptRes, roleRes] = await Promise.all([
-          axios.get("https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev//getDepartments"),
-          axios.get("https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev//getRoles"),
+          axios.get("https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/getDepartments"),
+          axios.get("https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/getRoles"),
         ]);
         setDepartments(deptRes.data);
         setRoles(roleRes.data);
@@ -79,7 +79,7 @@ const Profile = () => {
     const id = decodedToken.userId;
 
     axios
-      .put(`https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev//updateuser/${id}`, user)
+      .put(`https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/updateuser/${id}`, user)
       .then((res) => {
        localStorage.setItem("token", res.data.token);
         showSuccessToast("Profile Updated Successfully")

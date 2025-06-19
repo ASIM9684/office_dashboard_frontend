@@ -42,7 +42,7 @@ const [counts, setCounts] = useState({
 useEffect(() => {
   const fetchCounts = async () => {
     try {
-      const res = await axios.get("https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev//getDashboardCounts");
+      const res = await axios.get("https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/getDashboardCounts");
       setCounts(res.data);
     } catch (err) {
       console.error("Failed to fetch dashboard counts", err);
@@ -50,7 +50,7 @@ useEffect(() => {
   };
 const fetchdepartmentData = async () => {
   try {
-    const res = await axios.get("https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev//getUserCountByDepartment");
+    const res = await axios.get("https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/getUserCountByDepartment");
     setDepartmentData(res.data);
   } catch (err) {
     console.error("Failed to fetch department data", err);
@@ -67,7 +67,7 @@ const fetchdepartmentData = async () => {
         const decoded = jwtDecode(token);
         const userId = decoded.userId;
         const res = await fetch(
-          `https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev//getAttendenceById/${userId}`
+          `https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/getAttendenceById/${userId}`
         );
         const data = await res.json();
         if (res.ok) {
@@ -128,7 +128,7 @@ const submitAttendance = async () => {
     const decoded = jwtDecode(token);
     const userId = decoded.userId;
 
-    const res = await fetch("https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev//addAttendance", {
+    const res = await fetch("https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/addAttendance", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -208,7 +208,7 @@ const todayAttendance = (status) => {
         const userId = decoded.userId;
           const start = new Date().toISOString();
  axios.post(
-  `https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev//addTodayAttendance`,{
+  `https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/addTodayAttendance`,{
     userId,
     startTime : start,
     status
@@ -237,7 +237,7 @@ const updatetodayattendance = async (status, shouldSetEndTime = false) => {
     const endTime = shouldSetEndTime ? new Date().toISOString() : null;
 
     const res = await axios.put(
-      `https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev//updatetodayattendance/${attendanceId}`,
+      `https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/updatetodayattendance/${attendanceId}`,
       {
         status,
         endTime,

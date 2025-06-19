@@ -124,7 +124,7 @@ const AttendanceOwnCard = () => {
         const token = localStorage.getItem("token");
         const decoded = jwtDecode(token);
         const id = decoded.userId;
-        const res = await fetch(`https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev//getAttendenceById/${id}`);
+        const res = await fetch(`https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/getAttendenceById/${id}`);
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || "Failed to fetch");
         setAttendanceData(data);

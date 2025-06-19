@@ -12,7 +12,7 @@ export default function ClockInToday() {
     const fetchEmployees = async () => {
       try {
         const response = await axios.get(
-          `https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev//ClockInNow`
+          `https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/ClockInNow`
         );
         setEmployees(response.data);
       } catch (error) {

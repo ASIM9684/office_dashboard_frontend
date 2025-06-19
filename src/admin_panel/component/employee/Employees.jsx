@@ -11,7 +11,7 @@ export default function EmployeesPage() {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const response = await axios.get("https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev//getEmployee");
+        const response = await axios.get("https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/getEmployee");
         setEmployees(response.data);
         
       } catch (error) {
@@ -24,7 +24,7 @@ export default function EmployeesPage() {
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this employee?")) {
       axios
-        .delete(`https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev//deleteEmployee/${id}`)
+        .delete(`https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev/deleteEmployee/${id}`)
         .then(() => {
           setEmployees((prev) => prev.filter((emp) => emp._id !== id));
               showSuccessToast("Employee Deleted Successfully")
