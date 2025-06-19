@@ -48,10 +48,13 @@ const AttendanceOwnCard = () => {
   const [loading, setLoading] = useState(true);
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}`;
   });
 
-  const exportToPDF = () => {
+ const exportToPDF = () => {
     const token = localStorage.getItem("token");
     const decoded = jwtDecode(token);
     const userName = decoded.name;
@@ -65,6 +68,7 @@ const AttendanceOwnCard = () => {
     const tableData = filteredData.map((entry) => {
       const start = new Date(entry.startTime);
       const end = entry.endTime ? new Date(entry.endTime) : null;
+      
       const breakTime = entry.breakTime || "00:00:00";
 
       let workDuration = "—";
@@ -72,18 +76,18 @@ const AttendanceOwnCard = () => {
         const workSecs = (end - start) / 1000;
         workDuration = formatSecondsToHHMMSS(workSecs > 0 ? workSecs : 0);
       }
-
+          //  const clockIn = start.toLocaleString();
+          //       const clockOut = end ? end.toLocaleString() : "—";
       return [
-        start.toLocaleDateString(),
-        start.toLocaleTimeString(),
-        end ? end.toLocaleTimeString() : "—",
+        start.toLocaleString(),
+        end ? end.toLocaleString() : "—",
         breakTime,
         workDuration,
       ];
     });
 
     autoTable(doc, {
-      head: [["Date", "Clock In", "Clock Out", "Break Time", "Work Duration"]],
+      head: [["Clock In", "Clock Out", "Break Time", "Work Duration"]],
       body: tableData,
       startY: 30,
       styles: { fontSize: 10 },
@@ -115,7 +119,7 @@ const AttendanceOwnCard = () => {
 
     const fileName = `Attendance_Report_${selectedMonth}.pdf`;
     doc.save(fileName);
-    showSuccessToast("Attendance Record Generated Successfully");
+ showSuccessToast("Attendance Record Generated Successfully");
   };
 
   useEffect(() => {
@@ -124,7 +128,9 @@ const AttendanceOwnCard = () => {
         const token = localStorage.getItem("token");
         const decoded = jwtDecode(token);
         const id = decoded.userId;
-        const res = await fetch(`https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/getAttendenceById/${id}`);
+        const res = await fetch(
+          `https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/getAttendenceById/${id}`
+        );
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || "Failed to fetch");
         setAttendanceData(data);
@@ -158,10 +164,13 @@ const AttendanceOwnCard = () => {
     <div className="min-h-screen rounded">
       <div className=" mx-auto">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">🗓️ Attendance Records</h1>
-<div className="mt-4 md:mt-0 flex flex-col md:flex-row gap-2 items-start md:items-center">
-
-            <label className="text-sm font-medium text-gray-700 mr-2">Select Month:</label>
+          <h1 className="text-2xl font-bold text-gray-800">
+            🗓️ Attendance Records
+          </h1>
+          <div className="mt-4 md:mt-0 flex flex-col md:flex-row gap-2 items-start md:items-center">
+            <label className="text-sm font-medium text-gray-700 mr-2">
+              Select Month:
+            </label>
             <input
               type="month"
               value={selectedMonth}
@@ -185,7 +194,9 @@ const AttendanceOwnCard = () => {
           <>
             {/* Monthly Summary */}
             <div className="mt-6 p-4 bg-white rounded-xl shadow mb-4">
-              <h2 className="text-lg font-semibold text-gray-800 mb-2">🔢 Monthly Summary</h2>
+              <h2 className="text-lg font-semibold text-gray-800 mb-2">
+                🔢 Monthly Summary
+              </h2>
               {(() => {
                 let totalBreakSeconds = 0;
                 let totalWorkSeconds = 0;
@@ -193,7 +204,9 @@ const AttendanceOwnCard = () => {
                 filteredData.forEach((entry) => {
                   const start = new Date(entry.startTime);
                   const end = entry.endTime ? new Date(entry.endTime) : null;
-                  const breakSecs = parseTimeStringToSeconds(entry.breakTime || "00:00:00");
+                  const breakSecs = parseTimeStringToSeconds(
+                    entry.breakTime || "00:00:00"
+                  );
 
                   if (start && end) {
                     const workSecs = (end - start) / 1000 - breakSecs;
@@ -209,10 +222,12 @@ const AttendanceOwnCard = () => {
                 return (
                   <div className="text-sm text-gray-700 space-y-1">
                     <div>
-                      Total Work Time: <span className="font-semibold">{totalWork}</span>
+                      Total Work Time:{" "}
+                      <span className="font-semibold">{totalWork}</span>
                     </div>
                     <div>
-                      Total Break Time: <span className="font-semibold">{totalBreak}</span>
+                      Total Break Time:{" "}
+                      <span className="font-semibold">{totalBreak}</span>
                     </div>
                   </div>
                 );
@@ -224,14 +239,16 @@ const AttendanceOwnCard = () => {
               {filteredData.map((entry, idx) => {
                 const start = new Date(entry.startTime);
                 const end = entry.endTime ? new Date(entry.endTime) : null;
-                const clockIn = start.toLocaleTimeString();
-                const clockOut = end ? end.toLocaleTimeString() : "—";
+                const clockIn = start.toLocaleString();
+                const clockOut = end ? end.toLocaleString() : "—";
                 const breakTime = entry.breakTime || "00:00:00";
 
                 let workDuration = "—";
                 if (end) {
                   const workSecs = (end - start) / 1000;
-                  workDuration = formatSecondsToHHMMSS(workSecs > 0 ? workSecs : 0);
+                  workDuration = formatSecondsToHHMMSS(
+                    workSecs > 0 ? workSecs : 0
+                  );
                 }
 
                 return (

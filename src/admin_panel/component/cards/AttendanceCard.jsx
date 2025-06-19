@@ -65,6 +65,7 @@ const AttendanceOwnCard = () => {
     const tableData = filteredData.map((entry) => {
       const start = new Date(entry.startTime);
       const end = entry.endTime ? new Date(entry.endTime) : null;
+      
       const breakTime = entry.breakTime || "00:00:00";
 
       let workDuration = "—";
@@ -72,18 +73,18 @@ const AttendanceOwnCard = () => {
         const workSecs = (end - start) / 1000;
         workDuration = formatSecondsToHHMMSS(workSecs > 0 ? workSecs : 0);
       }
-
+          //  const clockIn = start.toLocaleString();
+          //       const clockOut = end ? end.toLocaleString() : "—";
       return [
-        start.toLocaleDateString(),
-        start.toLocaleTimeString(),
-        end ? end.toLocaleTimeString() : "—",
+        start.toLocaleString(),
+        end ? end.toLocaleString() : "—",
         breakTime,
         workDuration,
       ];
     });
 
     autoTable(doc, {
-      head: [["Date", "Clock In", "Clock Out", "Break Time", "Work Duration"]],
+      head: [["Clock In", "Clock Out", "Break Time", "Work Duration"]],
       body: tableData,
       startY: 30,
       styles: { fontSize: 10 },
@@ -224,8 +225,8 @@ const AttendanceOwnCard = () => {
               {filteredData.map((entry, idx) => {
                 const start = new Date(entry.startTime);
                 const end = entry.endTime ? new Date(entry.endTime) : null;
-                const clockIn = start.toLocaleTimeString();
-                const clockOut = end ? end.toLocaleTimeString() : "—";
+           const clockIn = start.toLocaleString();
+                const clockOut = end ? end.toLocaleString() : "—";
                 const breakTime = entry.breakTime || "00:00:00";
 
                 let workDuration = "—";
