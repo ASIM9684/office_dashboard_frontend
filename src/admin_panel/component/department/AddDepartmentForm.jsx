@@ -16,7 +16,7 @@ const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const response = axios.post("http://192.168.18.15:8000/addDepartment", formData);
+    const response = axios.post("https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev//addDepartment", formData);
     response
       .then((res) => {
         setFormData({

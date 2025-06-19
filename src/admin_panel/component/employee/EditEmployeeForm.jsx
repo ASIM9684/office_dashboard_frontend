@@ -28,8 +28,8 @@ const navigate = useNavigate();
     const fetchData = async () => {
       try {
         const [deptRes, roleRes] = await Promise.all([
-          axios.get("http://192.168.18.15:8000/getDepartments"),
-          axios.get("http://192.168.18.15:8000/getRoles"),
+          axios.get("https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev//getDepartments"),
+          axios.get("https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev//getRoles"),
         ]);
         setDepartments(deptRes.data);
         setRoles(roleRes.data);
@@ -47,7 +47,7 @@ const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-  const response = axios.put(`http://192.168.18.15:8000/updateEmployee/${id}`, formData);
+  const response = axios.put(`https://d62ae724-87d9-42ad-8e0f-dc494d585f28-00-2llp35q3d5uj8.pike.replit.dev//updateEmployee/${id}`, formData);
     response
       .then((res) => {
         setFormData({
