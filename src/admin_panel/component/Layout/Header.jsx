@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 const Header = ({ toggleSidebar }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState({});
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -13,7 +14,28 @@ const Header = ({ toggleSidebar }) => {
       const decodedToken = jwtDecode(token);
       setUser(decodedToken);
     }
+
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
   }, []);
+
+  // Format date like: "19 Jun 2025"
+  const formattedDate = currentTime.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+
+  // Format time like: "04:35:22 PM"
+  const formattedTime = currentTime.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  });
 
   return (
     <header className="flex items-center justify-between px-6 py-4 bg-white shadow-md fixed top-0 left-0 right-0 z-10 h-16">
@@ -33,11 +55,12 @@ const Header = ({ toggleSidebar }) => {
         />
       </div>
 
-      <div className="flex items-center gap-4">
-        <button className="relative">
-          <Bell className="h-5 w-5 text-gray-600" />
-          <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full" />
-        </button>
+      <div className="flex items-center gap-6">
+        {/* Clock */}
+        <div className="text-sm text-gray-700 text-right leading-tight whitespace-nowrap">
+          <div>{`${formattedDate} – ${formattedTime}`}</div>
+        </div>
+
 
         <div
           onClick={() => navigate("/profile")}

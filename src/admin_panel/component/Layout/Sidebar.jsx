@@ -8,6 +8,9 @@ import {
   Clock,
   CheckCheck,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
+import { showErrorToast } from "../../utils/toast";
 
 const navItems = [
   { label: "Dashboard", path: "/", icon: <Home /> },
@@ -21,6 +24,19 @@ const navItems = [
 
 const Sidebar = ({ collapsed, setCollapsed }) => {
   const navigate = useNavigate();
+  const [role, setRole] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setRole(decoded.role);
+      } catch {
+        setRole(null);
+      }
+    }
+  }, []);
 
   const handleLogout = () => {
     localStorage.clear();
@@ -29,8 +45,20 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
 
   const handleNavClick = () => {
     if (window.innerWidth < 1280) {
-      setCollapsed(false); // close sidebar on small screens
+      setCollapsed(false);
     }
+  };
+
+  const handleBlockedClick = (label) => {
+    showErrorToast(`Access denied. Kindly contact administration.`);
+  };
+
+  const isRestrictedPath = (path) => {
+    return ["/employees", "/department"].includes(path);
+  };
+
+  const isAllowedRole = () => {
+    return role === "Admin" || role === "HR";
   };
 
   return (
@@ -41,20 +69,27 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
         xl:static xl:w-64 xl:block`}
     >
       <nav className="mt-4 flex flex-col gap-1">
-        {navItems.map(({ label, path, icon, isLogout }) =>
-          isLogout ? (
-            <button
-              key={label}
-              onClick={() => {
-                handleLogout();
-                handleNavClick(); // Close sidebar on logout
-              }}
-              className="flex items-center gap-4 px-4 py-3 hover:bg-blue-500 text-left w-full"
-            >
-              <span>{icon}</span>
-              <span className="text-sm">{label}</span>
-            </button>
-          ) : (
+        {navItems.map(({ label, path, icon, isLogout }) => {
+          if (isLogout) {
+            return (
+              <button
+                key={label}
+                onClick={() => {
+                  handleLogout();
+                  handleNavClick();
+                }}
+                className="flex items-center gap-4 px-4 py-3 hover:bg-blue-500 text-left w-full"
+              >
+                <span>{icon}</span>
+                <span className="text-sm">{label}</span>
+              </button>
+            );
+          }
+
+          const restricted = isRestrictedPath(path);
+          const canAccess = !restricted || isAllowedRole();
+
+          return canAccess ? (
             <NavItem
               key={label}
               label={label}
@@ -62,8 +97,20 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
               to={path}
               onNavigate={handleNavClick}
             />
-          )
-        )}
+          ) : (
+            <button
+              key={label}
+              onClick={() => {
+                handleBlockedClick(label);
+                handleNavClick();
+              }}
+              className="flex items-center gap-4 px-4 py-3 text-left w-full cursor-not-allowed hover:bg-blue-400/50"
+            >
+              <span>{icon}</span>
+              <span className="text-sm">{label}</span>
+            </button>
+          );
+        })}
       </nav>
     </div>
   );

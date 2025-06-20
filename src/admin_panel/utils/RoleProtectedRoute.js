@@ -15,14 +15,15 @@ const RoleProtectedRoute = ({ allowedRoles, children }) => {
 
     try {
       const decoded = jwtDecode(token);
-      
       const userRole = decoded.role;
-      
 
       if (!allowedRoles.includes(userRole)) {
         showErrorToast("Access denied. Kindly contact administration.");
 
-        navigate(-1);
+        // Delay navigation by 1.5 seconds to allow toast to appear
+        setTimeout(() => {
+          navigate("/", { replace: true });
+        }, 0);
       }
     } catch {
       navigate("/login", { replace: true });
