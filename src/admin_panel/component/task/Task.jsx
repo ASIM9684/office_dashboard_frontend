@@ -73,7 +73,7 @@ fetchEmployees();
                 <td className="py-3 px-4">
                   {emp.createdAt ? new Date(emp.createdAt).toLocaleDateString() : ""}
                 </td>
-                <td className="py-3 px-4 text-center">
+                <td className="py-3 px-4">
                     {emp.status == "Pending" && emp.assignedTo._id == userId ? (
        <button
                     className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition"
