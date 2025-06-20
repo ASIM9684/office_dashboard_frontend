@@ -3,6 +3,7 @@ import { jwtDecode } from "jwt-decode";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { showSuccessToast } from "../../utils/toast";
+import { useParams } from "react-router-dom";
 
 // Utility functions
 const parseTimeStringToSeconds = (timeStr) => {
@@ -52,9 +53,7 @@ const AttendanceOwnCard = () => {
   });
 
   const exportToPDF = () => {
-    const token = localStorage.getItem("token");
-    const decoded = jwtDecode(token);
-    const userName = decoded.name;
+    const userName = attendanceData[0].userId.name;
 
     const doc = new jsPDF();
     doc.setFontSize(16);
@@ -73,8 +72,6 @@ const AttendanceOwnCard = () => {
         const workSecs = (end - start) / 1000;
         workDuration = formatSecondsToHHMMSS(workSecs > 0 ? workSecs : 0);
       }
-          //  const clockIn = start.toLocaleString();
-          //       const clockOut = end ? end.toLocaleString() : "—";
       return [
         start.toLocaleString(),
         end ? end.toLocaleString() : "—",
@@ -118,13 +115,10 @@ const AttendanceOwnCard = () => {
     doc.save(fileName);
  showSuccessToast("Attendance Record Generated Successfully");
   };
-
+const {id}  = useParams();
   useEffect(() => {
     const fetchAttendance = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const decoded = jwtDecode(token);
-        const id = decoded.userId;
         const res = await fetch(`https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/getAttendenceById/${id}`);
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || "Failed to fetch");
