@@ -57,9 +57,11 @@ const Header = ({ toggleSidebar }) => {
 
       <div className="flex items-center gap-6">
         {/* Clock */}
-        <div className="text-sm text-gray-700 text-right leading-tight whitespace-nowrap">
-          <div>{`${formattedDate} – ${formattedTime}`}</div>
-        </div>
+      {/* Clock - hidden on md and below */}
+<div className="text-sm text-gray-700 text-right leading-tight whitespace-nowrap hidden lg:block">
+  <div>{`${formattedDate} – ${formattedTime}`}</div>
+</div>
+
 
 
         <div
