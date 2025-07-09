@@ -11,7 +11,7 @@ export default function DepartmentPage() {
   useEffect(() => {
     const fetchDepartment = async () => {
       try {
-        const response = await axios.get("https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/getDepartments");
+        const response = await axios.get("https://office-dashboard-backend.zeabur.app/getDepartments");
         setDepartment(response.data);
       } catch (error) {
         console.error("Error fetching Department:", error);
@@ -23,7 +23,7 @@ export default function DepartmentPage() {
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this Deaprtment?")) {
       axios
-        .delete(`https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/deleteDepartment/${id}`)
+        .delete(`https://office-dashboard-backend.zeabur.app/deleteDepartment/${id}`)
         .then(() => {
           setDepartment((prev) => prev.filter((emp) => emp._id !== id));
            showSuccessToast("Department Deleted Successfully")

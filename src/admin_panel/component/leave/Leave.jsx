@@ -22,7 +22,7 @@ export default function LeavePage() {
   const fetchLeaves = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/getLeave", {
+      const response = await axios.get("https://office-dashboard-backend.zeabur.app/getLeave", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -36,7 +36,7 @@ export default function LeavePage() {
 
   const handleStatusChange = async (id, status) => {
     try {
-      await axios.put(`https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/updateLeave/${id}`, { status });
+      await axios.put(`https://office-dashboard-backend.zeabur.app/updateLeave/${id}`, { status });
       fetchLeaves();
       if(status == "Accepted"){
         showSuccessToast("Leave Request Accepted Successfully")

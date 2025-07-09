@@ -12,7 +12,7 @@ export default function ClockInToday() {
     const fetchEmployees = async () => {
       try {
         const response = await axios.get(
-          `https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/ClockInNow`
+          `https://office-dashboard-backend.zeabur.app/ClockInNow`
         );
         setEmployees(response.data);
       } catch (error) {

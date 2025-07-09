@@ -12,9 +12,9 @@ const AddEmployeeForm = () => {
     department: "",
     role: "",
     joiningDate: "",
-    phone : ""
+    phone: ""
   });
-const navigate = useNavigate();
+  const navigate = useNavigate();
   const [departments, setDepartments] = useState([]);
   const [roles, setRoles] = useState([]);
 
@@ -22,8 +22,8 @@ const navigate = useNavigate();
     const fetchData = async () => {
       try {
         const [deptRes, roleRes] = await Promise.all([
-          axios.get("https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/getDepartments"),
-          axios.get("https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/getRoles"),
+          axios.get("https://office-dashboard-backend.zeabur.app/getDepartments"),
+          axios.get("https://office-dashboard-backend.zeabur.app/getRoles"),
         ]);
         setDepartments(deptRes.data);
         setRoles(roleRes.data);
@@ -41,7 +41,7 @@ const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-  const response = axios.post("https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/addemployee", formData);
+    const response = axios.post("https://office-dashboard-backend.zeabur.app/addemployee", formData);
     response
       .then((res) => {
         setFormData({
@@ -120,15 +120,17 @@ const navigate = useNavigate();
             required
           >
             <option value="">Select Role</option>
-            {roles.map((role) => (
-              <option key={role._id} value={role._id}>
-                {role.name}
-              </option>
-            ))}
+            {roles
+              ?.filter((role) => role.name !== "Admin")
+              .map((role) => (
+                <option key={role._id} value={role._id}>
+                  {role.name}
+                </option>
+              ))}
+
           </select>
         </div>
 
-        {/* Joining Date */}
         <FormInput
           label="Joining Date"
           name="joiningDate"
@@ -138,22 +140,22 @@ const navigate = useNavigate();
           required
         />
 
-<FormInput
-  label="Password"
-  name="password"
-  type="password"
-  value={formData.password}
-  onChange={handleChange}
-  required
-/>
-<FormInput
-  label="Phone Number"
-  name="phone"
-  type="number"
-  value={formData.phone}
-  onChange={handleChange}
-  required
-/>
+        <FormInput
+          label="Password"
+          name="password"
+          type="password"
+          value={formData.password}
+          onChange={handleChange}
+          required
+        />
+        <FormInput
+          label="Phone Number"
+          name="phone"
+          type="number"
+          value={formData.phone}
+          onChange={handleChange}
+          required
+        />
 
         {/* Submit Button */}
         <div className="md:col-span-2 text-right mt-2">

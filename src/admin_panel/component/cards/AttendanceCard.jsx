@@ -119,7 +119,7 @@ const {id}  = useParams();
   useEffect(() => {
     const fetchAttendance = async () => {
       try {
-        const res = await fetch(`https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/getAttendenceById/${id}`);
+        const res = await fetch(`https://office-dashboard-backend.zeabur.app/getAttendenceById/${id}`);
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || "Failed to fetch");
         setAttendanceData(data);

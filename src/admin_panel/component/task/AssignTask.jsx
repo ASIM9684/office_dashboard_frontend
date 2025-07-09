@@ -23,7 +23,7 @@ const navigate = useNavigate();
       assignedTo : id,
       status : status
     }
-  const response = axios.post(`https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/assignTask`,form);
+  const response = axios.post(`https://office-dashboard-backend.zeabur.app/assignTask`,form);
     response
       .then((res) => {
           showSuccessToast("Task Assigned Successfully")

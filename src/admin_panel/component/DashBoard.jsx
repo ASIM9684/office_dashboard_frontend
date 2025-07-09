@@ -43,7 +43,7 @@ const Dashboard = () => {
     const fetchCounts = async () => {
       try {
         const res = await axios.get(
-          "https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/getDashboardCounts"
+          "https://office-dashboard-backend.zeabur.app/getDashboardCounts"
         );
         setCounts(res.data);
       } catch (err) {
@@ -53,7 +53,7 @@ const Dashboard = () => {
     const fetchdepartmentData = async () => {
       try {
         const res = await axios.get(
-          "https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/getUserCountByDepartment"
+          "https://office-dashboard-backend.zeabur.app/getUserCountByDepartment"
         );
         setDepartmentData(res.data);
       } catch (err) {
@@ -71,7 +71,7 @@ const Dashboard = () => {
         const decoded = jwtDecode(token);
         const userId = decoded.userId;
         const res = await fetch(
-          `https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/getAttendenceById/${userId}`
+          `https://office-dashboard-backend.zeabur.app/getAttendenceById/${userId}`
         );
         const data = await res.json();
         if (res.ok) {
@@ -139,7 +139,7 @@ const Dashboard = () => {
       const userId = decoded.userId;
 
       const res = await fetch(
-        "https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/addAttendance",
+        "https://office-dashboard-backend.zeabur.app/addAttendance",
         {
           method: "POST",
           headers: {
@@ -194,28 +194,41 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    const storedClockInStart = localStorage.getItem("clockInStartTime");
-    const storedBreakStart = localStorage.getItem("breakStartTime");
+    const fetchTodayAttendance = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const decoded = jwtDecode(token);
+        const userId = decoded.userId;
 
-    const isClockInRunning = localStorage.getItem("clockInRunning") === "true";
-    const isBreakRunning = localStorage.getItem("breakRunning") === "true";
+        const res = await axios.get(`https://office-dashboard-backend.zeabur.app/getTodayAttendanceByUser/${userId}`);
+        const data = res.data;
 
-    if (isClockInRunning && storedClockInStart) {
-      const elapsed = Math.floor(
-        (Date.now() - new Date(storedClockInStart)) / 1000
-      );
-      setClockInTime(elapsed);
-      setStartTime(storedClockInStart);
-      setClockInRunning(true);
-    }
+        if (data?.startTime) {
+          const clockInElapsed = Math.floor((Date.now() - new Date(data.startTime)) / 1000);
+          setClockInTime(clockInElapsed);
+          setStartTime(data.startTime);
+          setClockInRunning(true);
+        }
 
-    if (isBreakRunning && storedBreakStart) {
-      const elapsed = Math.floor(
-        (Date.now() - new Date(storedBreakStart)) / 1000
-      );
-      setBreakTime(elapsed);
-      setBreakRunning(true);
-    }
+        if (data?.breakTime) {
+          const [h, m, s] = data.breakTime.split(":").map(Number);
+          const breakInSeconds = h * 3600 + m * 60 + s;
+          setBreakTime(breakInSeconds);
+          if (data?.status === "On Break") {
+
+            setBreakRunning(true);
+          }
+          else {
+            setBreakRunning(false);
+          }
+        }
+
+      } catch (err) {
+        console.error("Failed to fetch today's attendance:", err);
+      }
+    };
+
+    fetchTodayAttendance();
   }, []);
 
   const todayAttendance = (status) => {
@@ -225,7 +238,7 @@ const Dashboard = () => {
     const start = new Date().toISOString();
     axios
       .post(
-        `https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/addTodayAttendance`,
+        `https://office-dashboard-backend.zeabur.app/addTodayAttendance`,
         {
           userId,
           startTime: start,
@@ -246,19 +259,19 @@ const Dashboard = () => {
 
   const updatetodayattendance = async (status, shouldSetEndTime = false) => {
     try {
-      const attendanceId = localStorage.getItem("attendanceId");
-      if (!attendanceId) {
-        console.error("No attendance ID found in localStorage");
-        return;
-      }
+      const token = localStorage.getItem("token");
+      const decoded = jwtDecode(token);
+      const userId = decoded.userId;
+
 
       const endTime = shouldSetEndTime ? new Date().toISOString() : null;
-
-      const res = await axios.put(
-        `https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/updatetodayattendance/${attendanceId}`,
+      const formattedBreakTime = formatTime(breakTime);
+      await axios.put(
+        `https://office-dashboard-backend.zeabur.app/updatetodayattendance/${userId}`,
         {
           status,
           endTime,
+          breakTime: formattedBreakTime
         }
       );
     } catch (error) {
@@ -276,7 +289,7 @@ const Dashboard = () => {
         const decoded = jwtDecode(token);
         const userId = decoded.userId;
         const response = await axios.get(
-          `https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/getPendingTasksByUser/${userId}`
+          `https://office-dashboard-backend.zeabur.app/getPendingTasksByUser/${userId}`
         );
         setPendingTasks(response.data);
       } catch (error) {
@@ -286,7 +299,7 @@ const Dashboard = () => {
     const fetchErrorAttendance = async () => {
       try {
         const response = await axios.get(
-          `https://fb9759c5-4ae7-4c96-8cf7-e24bd6228144-00-ncf9c4z1e6yi.pike.replit.dev/ErrorAttendance`
+          `https://office-dashboard-backend.zeabur.app/ErrorAttendance`
         );
         setErrorAttendance(response.data);
       } catch (error) {
@@ -313,20 +326,13 @@ const Dashboard = () => {
               if (clockInRunning) {
                 submitAttendance();
                 updatetodayattendance("Clock Out", true);
-                localStorage.removeItem("attendanceId");
                 setClockInRunning(false);
                 setBreakRunning(false);
-                localStorage.removeItem("clockInStartTime");
-                localStorage.removeItem("clockInRunning");
-                localStorage.removeItem("breakStartTime");
-                localStorage.removeItem("breakRunning");
                 showSuccessToast("Your Clocked Out");
               } else {
                 const start = new Date().toISOString();
                 setStartTime(start);
                 todayAttendance("Working");
-                localStorage.setItem("clockInStartTime", start);
-                localStorage.setItem("clockInRunning", "true");
                 setClockInRunning(true);
                 showSuccessToast("Your Clocked In");
               }
