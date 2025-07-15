@@ -14,7 +14,6 @@ import Addleave from './admin_panel/component/leave/Addleave';
 import LeavePage from './admin_panel/component/leave/Leave';
 import Profile from './admin_panel/component/profile/Profile';
 import AttendanceCardList from './admin_panel/component/cards/AttendanceCard';
-import AttendanceOwnCard from './admin_panel/component/cards/AttendanceOwnCard';
 import ClockInToday from './admin_panel/component/ClockInToday';
 import AssignTask from './admin_panel/component/task/AssignTask';
 import Task from './admin_panel/component/task/Task';
@@ -26,7 +25,7 @@ const isAuthenticated = () => {
   if (!token) return false;
   try {
     const decoded = jwtDecode(token);
-    return decoded.exp * 1000 > Date.now(); 
+    return decoded.exp * 1000 > Date.now();
   } catch {
     return false;
   }
@@ -35,13 +34,18 @@ const isAuthenticated = () => {
 const PrivateRoute = ({ children }) => {
   return isAuthenticated() ? children : <Navigate to="/login" />;
 };
+const LoginRoute = ({ children }) => {
+  return isAuthenticated() ? <Navigate to="/" /> : children;
+};
 
 function App() {
   return (
     <Router>
-           <ToastContainer />
+      <ToastContainer />
       <Routes>
-        <Route path="/login" element={<Login />} />
+
+        <Route path="/login" element={<LoginRoute><Login />  </LoginRoute>} />
+
         <Route
           path="/"
           element={
@@ -50,7 +54,7 @@ function App() {
             </PrivateRoute>
           }
         />
-       <Route
+        <Route
           path="/profile"
           element={
             <PrivateRoute>
@@ -58,7 +62,7 @@ function App() {
             </PrivateRoute>
           }
         />
-         <Route
+        <Route
           path="/Task"
           element={
             <PrivateRoute>
@@ -66,7 +70,7 @@ function App() {
             </PrivateRoute>
           }
         />
-       <Route
+        <Route
           path="/ClockInToday"
           element={
             <PrivateRoute>
@@ -74,7 +78,7 @@ function App() {
             </PrivateRoute>
           }
         />
-       <Route
+        <Route
           path="/AttendanceCardList/:id"
           element={
             <PrivateRoute>
@@ -82,7 +86,7 @@ function App() {
             </PrivateRoute>
           }
         />
-       <Route
+        <Route
           path="/add-leave"
           element={
             <PrivateRoute>
@@ -90,7 +94,7 @@ function App() {
             </PrivateRoute>
           }
         />
-                <Route
+        <Route
           path="/leave"
           element={
             <PrivateRoute>
@@ -98,82 +102,82 @@ function App() {
             </PrivateRoute>
           }
         />
-<Route
-  path="/AssignTask/:id"
-  element={
-    <PrivateRoute>
-      <RoleProtectedRoute allowedRoles={['Admin', 'HR']}>
-        <Layout><AssignTask /></Layout>
-      </RoleProtectedRoute>
-    </PrivateRoute>
-  }
-/>
+        <Route
+          path="/AssignTask/:id"
+          element={
+            <PrivateRoute>
+              <RoleProtectedRoute allowedRoles={['Admin', 'HR']}>
+                <Layout><AssignTask /></Layout>
+              </RoleProtectedRoute>
+            </PrivateRoute>
+          }
+        />
 
-<Route
-  path="/department"
-  element={
-    <PrivateRoute>
-      <RoleProtectedRoute allowedRoles={['Admin', 'HR']}>
-        <Layout><DepartmentPage /></Layout>
-      </RoleProtectedRoute>
-    </PrivateRoute>
-  }
-/>
+        <Route
+          path="/department"
+          element={
+            <PrivateRoute>
+              <RoleProtectedRoute allowedRoles={['Admin', 'HR']}>
+                <Layout><DepartmentPage /></Layout>
+              </RoleProtectedRoute>
+            </PrivateRoute>
+          }
+        />
 
-<Route
-  path="/add-department"
-  element={
-    <PrivateRoute>
-      <RoleProtectedRoute allowedRoles={['Admin', 'HR']}>
-        <Layout><AddDepartmentForm /></Layout>
-      </RoleProtectedRoute>
-    </PrivateRoute>
-  }
-/>
+        <Route
+          path="/add-department"
+          element={
+            <PrivateRoute>
+              <RoleProtectedRoute allowedRoles={['Admin', 'HR']}>
+                <Layout><AddDepartmentForm /></Layout>
+              </RoleProtectedRoute>
+            </PrivateRoute>
+          }
+        />
 
-<Route
-  path="/edit-department"
-  element={
-    <PrivateRoute>
-      <RoleProtectedRoute allowedRoles={['Admin', 'HR']}>
-        <Layout><EditDepartmentForm /></Layout>
-      </RoleProtectedRoute>
-    </PrivateRoute>
-  }
-/>
+        <Route
+          path="/edit-department"
+          element={
+            <PrivateRoute>
+              <RoleProtectedRoute allowedRoles={['Admin', 'HR']}>
+                <Layout><EditDepartmentForm /></Layout>
+              </RoleProtectedRoute>
+            </PrivateRoute>
+          }
+        />
 
-<Route
-  path="/employees"
-  element={
-    <PrivateRoute>
-      <RoleProtectedRoute allowedRoles={['Admin', 'HR']}>
-        <Layout><EmployeesPage /></Layout>
-      </RoleProtectedRoute>
-    </PrivateRoute>
-  }
-/>
+        <Route
+          path="/employees"
+          element={
+            <PrivateRoute>
+              <RoleProtectedRoute allowedRoles={['Admin', 'HR']}>
+                <Layout><EmployeesPage /></Layout>
+              </RoleProtectedRoute>
+            </PrivateRoute>
+          }
+        />
 
-<Route
-  path="/add-employee"
-  element={
-    <PrivateRoute>
-      <RoleProtectedRoute allowedRoles={['Admin', 'HR']}>
-        <Layout><AddEmployeeForm /></Layout>
-      </RoleProtectedRoute>
-    </PrivateRoute>
-  }
-/>
+        <Route
+          path="/add-employee"
+          element={
+            <PrivateRoute>
+              <RoleProtectedRoute allowedRoles={['Admin', 'HR']}>
+                <Layout><AddEmployeeForm /></Layout>
+              </RoleProtectedRoute>
+            </PrivateRoute>
+          }
+        />
 
-<Route
-  path="/edit-employee"
-  element={
-    <PrivateRoute>
-      <RoleProtectedRoute allowedRoles={['Admin', 'HR']}>
-        <Layout><EditEmployeeForm /></Layout>
-      </RoleProtectedRoute>
-    </PrivateRoute>
-  }
-/>
+        <Route
+          path="/edit-employee"
+          element={
+            <PrivateRoute>
+              <RoleProtectedRoute allowedRoles={['Admin', 'HR']}>
+                <Layout><EditEmployeeForm /></Layout>
+              </RoleProtectedRoute>
+            </PrivateRoute>
+          }
+        />
 
       </Routes>
     </Router>
