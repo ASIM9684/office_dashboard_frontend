@@ -315,7 +315,7 @@ const Dashboard = () => {
       <h1 className="text-2xl font-bold mb-6 text-gray-800">Admin Dashboard</h1>
 
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
-        <div className="text-left text-sm text-gray-700  mb-2 md:mb-0 space-y-1">
+        <div className="text-left text-md text-gray-700  mb-2 md:mb-0 space-y-1 font-semibold">
           <div>Clock In Timer: {formatTime(clockInTime)}</div>
           <div>Break Timer: {formatTime(breakTime)}</div>
         </div>
