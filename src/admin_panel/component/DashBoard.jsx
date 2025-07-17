@@ -162,19 +162,21 @@ const Dashboard = () => {
     }
   };
 
+  const [startTimestamp, setStartTimestamp] = useState(null);
+
   useEffect(() => {
-    let clockInInterval;
-    if (clockInRunning) {
-      clockInInterval = setInterval(() => {
-        setClockInTime((prev) => prev + 1);
+    let interval;
+
+    if (clockInRunning && startTimestamp) {
+      interval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - new Date(startTimestamp)) / 1000);
+        setClockInTime(elapsed);
       }, 1000);
-    } else {
-      setClockInTime(0);
-      setBreakTime(0);
-      setBreakRunning(false);
     }
-    return () => clearInterval(clockInInterval);
-  }, [clockInRunning]);
+
+    return () => clearInterval(interval);
+  }, [clockInRunning, startTimestamp]);
+
 
   useEffect(() => {
     let breakInterval;
@@ -208,7 +210,10 @@ const Dashboard = () => {
           setClockInTime(clockInElapsed);
           setStartTime(data.startTime);
           setClockInRunning(true);
+          setStartTimestamp(data.startTime);
         }
+
+
 
         if (data?.breakTime) {
           const [h, m, s] = data.breakTime.split(":").map(Number);
