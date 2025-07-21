@@ -292,6 +292,14 @@ const Dashboard = () => {
 
       const endTime = shouldSetEndTime ? new Date().toISOString() : null;
       const formattedBreakTime = formatTime(breakTime);
+      const comment =
+        status === "On Break"
+          ? "On Break"
+          : status === "Clock Out"
+            ? "Clock Out"
+            : status === "Working"
+              ? "Working"
+              : "";
 
       await axios.post(`https://office-dashboard-backend.zeabur.app/updateclockSheet`, {
         name,
@@ -299,7 +307,7 @@ const Dashboard = () => {
         clockInTime: time,
         clockedOutTime: shouldSetEndTime ? new Date().toLocaleString() : "",
         breakTime: formattedBreakTime,
-        comment: shouldSetEndTime ? 'Clocked Out' : 'On Break',
+        comment: comment,
       });
 
       await axios.put(
@@ -311,11 +319,16 @@ const Dashboard = () => {
         }
       );
       const message = status === "On Break" ? "Enjoy Your Break" : "Welcome Back";
-      setClockInRunning(false);
-      setBreakRunning(false);
+      if (status === "Clock Out") {
+        setClockInRunning(false);
+        setBreakRunning(false);
+        setClockInTime(0);
+        setStartTimestamp(null);
+      }
+      else if (status === "Working") {
+        setBreakRunning(false);
+      }
       showSuccessToast(message);
-      setStartTimestamp(null);
-      setClockInTime(0);
     } catch (error) {
       const errorMessage = error.response?.data?.message || "Something went wrong";
       showErrorToast(errorMessage);
