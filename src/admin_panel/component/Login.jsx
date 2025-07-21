@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Lock } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -31,69 +30,90 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-100 flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl border border-blue-100">
-        <div className="flex items-center justify-center mb-6 gap-3">
-          <div className="bg-blue-100 p-2 rounded-full">
-            <Lock className="text-blue-600 w-6 h-6" />
-          </div>
-          <h2 className="text-2xl font-bold text-gray-800">Login</h2>
-        </div>
+    <div className="min-h-screen flex items-center justify-center bg-white px-4">
+      <div className="w-full max-w-sm bg-white p-6 text-center">
+        {/* Logo */}
+        <img
+          src="/logoGranule.jpg"
+          alt="Granule Logo"
+          className="mx-auto mb-2 w-32 h-32 object-contain"
+        />
 
+        {/* Title */}
+        <h1 className="text-sm font-semibold text-gray-700 mb-6">Granule</h1>
+
+        {/* Error */}
         {error && (
-          <div className="bg-red-100 text-red-700 px-4 py-3 mb-5 rounded-md text-sm shadow">
+          <div className="bg-red-100 text-red-700 px-4 py-2 mb-4 rounded-md text-sm">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <FormInput
-            label="Email Address"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="text-left">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email
+            </label>
+            <input
+              placeholder="Email"
+              type="text"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none "
+              required
+            />
+          </div>
 
-          <FormInput
-            label="Password"
-            name="password"
-            type="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
+          <div className="text-left">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Password
+            </label>
+            <input
+              placeholder="Password"
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" 
+              required
+            />
+          </div>
 
-          <div className="text-right">
+          <div className="flex justify-between space-x-2 pt-2">
             <button
               type="submit"
               disabled={loading}
-              className={`w-full py-2 px-4 text-white rounded-lg font-semibold bg-gradient-to-r from-blue-500 to-indigo-500 shadow-md transition-all duration-300 ${
-                loading
-                  ? "opacity-70 cursor-not-allowed"
-                  : "hover:from-blue-600 hover:to-indigo-600"
-              }`}
+              className="w-full bg-[#5a86ba] hover:bg-[#206abf] text-white font-semibold py-2 rounded-md transition"
             >
-              {loading ? "Logging in..." : "Login"}
+              {loading ? "Logging in..." : "Log In"}
             </button>
+            {/* <button
+              type="button"
+              className="w-full border border-blue-300 text-blue-600 font-semibold py-2 rounded-md hover:bg-blue-50"
+            >
+              Clock In
+            </button>
+            <button
+              type="button"
+              className="w-full border border-green-400 text-green-600 font-semibold py-2 rounded-md hover:bg-green-50"
+            >
+              Clock Out
+            </button> */}
           </div>
         </form>
+
+        {/* Bottom Link
+        <p className="text-sm text-gray-600 mt-6">
+          Forgot password ?{" "}
+          <a href="#" className="text-green-600 font-semibold hover:underline">
+            Join This Team
+          </a>
+        </p> */}
       </div>
     </div>
   );
 };
-
-const FormInput = ({ label, ...props }) => (
-  <div>
-    <label className="block text-sm font-medium text-gray-700 mb-1">
-      {label}
-    </label>
-    <input
-      {...props}
-      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
-    />
-  </div>
-);
 
 export default Login;

@@ -156,6 +156,8 @@ const Dashboard = () => {
       );
 
       const data = await res.json();
+      updatetodayattendance("Clock Out", true);
+
     } catch (err) {
       console.error("Error submitting attendance:", err);
       alert("Server error");
@@ -236,50 +238,87 @@ const Dashboard = () => {
     fetchTodayAttendance();
   }, []);
 
-  const todayAttendance = (status) => {
-    const token = localStorage.getItem("token");
-    const decoded = jwtDecode(token);
-    const userId = decoded.userId;
-    const start = new Date().toISOString();
-    axios
-      .post(
-        `https://office-dashboard-backend.zeabur.app/addTodayAttendance`,
-        {
-          userId,
-          startTime: start,
-          status,
-        }
-      )
-      .then((res) => {
-        if (res.status === 201) {
-          localStorage.setItem("attendanceId", res.data.attendance._id);
-        } else {
-          console.error("Failed to submit attendance:", res.data.message);
-        }
-      })
-      .catch((error) => {
-        console.error("Error submitting attendance:", error);
-      });
-  };
-
-  const updatetodayattendance = async (status, shouldSetEndTime = false) => {
+  const todayAttendance = async (status) => {
     try {
       const token = localStorage.getItem("token");
       const decoded = jwtDecode(token);
       const userId = decoded.userId;
+      const name = decoded.name;
+      const start = new Date().toISOString();
 
+
+      // 2. Log to today's attendance
+      const res = await axios.post("https://office-dashboard-backend.zeabur.app/addTodayAttendance", {
+        userId,
+        startTime: start,
+        status,
+      });
+
+      if (res.status === 201) {
+        localStorage.setItem("attendanceId", res.data.attendance._id);
+        setStartTimestamp(start);
+        setStartTime(start);
+        setClockInRunning(true);
+        showSuccessToast("You're Clocked In");
+        await axios.post("https://office-dashboard-backend.zeabur.app/clockSheet", {
+          name: name,
+          status: status,
+          clockedInTime: new Date(start).toLocaleString(),
+          clockedOutTime: "",
+          breakTime: "",
+          comment: "Started Working",
+        });
+      } else {
+        console.error("Failed to submit attendance:", res.data.message);
+        showErrorToast(res.data.message || "Failed to clock in");
+      }
+
+    } catch (error) {
+      console.error("Error submitting attendance:", error);
+      const errorMsg = error.response?.data?.message || "Something went wrong";
+      showErrorToast(errorMsg);
+    }
+  };
+
+  const updatetodayattendance = async (status, shouldSetEndTime = false) => {
+    try {
+      const time = new Date(startTime).toLocaleString();
+      console.log(time);
+
+      const token = localStorage.getItem("token");
+      const decoded = jwtDecode(token);
+      const userId = decoded.userId;
+      const name = decoded.name;
 
       const endTime = shouldSetEndTime ? new Date().toISOString() : null;
       const formattedBreakTime = formatTime(breakTime);
+
+      await axios.post(`https://office-dashboard-backend.zeabur.app/updateclockSheet`, {
+        name,
+        status,
+        clockInTime: time,
+        clockedOutTime: shouldSetEndTime ? new Date().toLocaleString() : "",
+        breakTime: formattedBreakTime,
+        comment: shouldSetEndTime ? 'Clocked Out' : 'On Break',
+      });
+
       await axios.put(
         `https://office-dashboard-backend.zeabur.app/updatetodayattendance/${userId}`,
         {
           status,
-          endTime,
+          endTime: shouldSetEndTime ? new Date().toISOString() : null,
           breakTime: formattedBreakTime
         }
       );
+      const message = status === "On Break" ? "Enjoy Your Break" : "Welcome Back";
+      setClockInRunning(false);
+      setBreakRunning(false);
+      showSuccessToast(message);
+      setStartTimestamp(null);
+      setClockInTime(0);
     } catch (error) {
+      const errorMessage = error.response?.data?.message || "Something went wrong";
+      showErrorToast(errorMessage);
       console.error("Error updating attendance:", error);
     }
   };
@@ -316,69 +355,60 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">Admin Dashboard</h1>
+    <div className="">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-3">
+        <h1 className="text-2xl font-bold mb-6 text-gray-800">Admin Dashboard</h1>
 
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
-        <div className="text-left text-md text-gray-700  mb-2 md:mb-0 space-y-1 font-semibold">
-          <div>Clock In Timer: {formatTime(clockInTime)}</div>
-          <div>Break Timer: {formatTime(breakTime)}</div>
-        </div>
-
-        <div className="flex gap-x-5">
+        <div className="flex items-center gap-x-5 mb-6">
+          <div className="text-left text-md text-gray-700  mb-2 md:mb-0 space-y-1 font-semibold">
+            {
+              breakRunning ? (
+                <div>Break Timer: {formatTime(breakTime)}</div>
+              ) : (
+                <div>{clockInRunning ? "Currently" : ""} Clock In Timer: {formatTime(clockInTime)}</div>
+              )
+            }
+          </div>
           <button
             onClick={() => {
               if (clockInRunning) {
                 submitAttendance();
-                updatetodayattendance("Clock Out", true);
-                setClockInRunning(false);
-                setBreakRunning(false);
-                showSuccessToast("Your Clocked Out");
               } else {
-                const start = new Date().toISOString();
-                setStartTime(start);
                 todayAttendance("Working");
-                setClockInRunning(true);
-                showSuccessToast("Your Clocked In");
               }
             }}
-            className="bg-green-500 py-3 px-6 font-bold text-white rounded min-w-[140px]"
+            className="bg-green-500 hover:bg-green-600 py-2 px-4 font-semibold text-white rounded min-w-[120px] min-h-[45px]"
           >
             {clockInRunning ? "Clock Out" : "Clock In"}
           </button>
+          {clockInRunning && (
 
-          <button
-            onClick={() => {
-              if (!clockInRunning) {
-                showErrorToast("First Clock In to Start a Break");
-                return;
-              }
-              setBreakRunning((prev) => {
-                const newState = !prev;
-
-                if (newState) {
-                  updatetodayattendance("On Break", false);
-                  const start = new Date().toISOString();
-                  localStorage.setItem("breakStartTime", start);
-                  localStorage.setItem("breakRunning", "true");
-                  showSuccessToast("Enjoy Your Break");
-                } else {
-                  updatetodayattendance("Working", false);
-                  localStorage.removeItem("breakStartTime");
-                  localStorage.setItem("breakRunning", "false");
-                  showSuccessToast("Welcome Back");
+            <button
+              onClick={() => {
+                if (!clockInRunning) {
+                  showErrorToast("First Clock In to Start a Break");
+                  return;
                 }
+                setBreakRunning((prev) => {
+                  const newState = !prev;
 
-                return newState;
-              });
-            }}
-            className="bg-blue-700 py-3 px-6 font-bold text-white rounded min-w-[140px]"
-          >
-            {breakRunning ? "Pause Break" : "Start Break"}
-          </button>
+                  if (newState) {
+                    updatetodayattendance("On Break", false);
+                  } else {
+                    updatetodayattendance("Working", false);
+                  }
+
+                  return newState;
+                });
+              }}
+              className="bg-[#ff0] hover:bg-[#ecec2e] border border-slateblue  py-2 px-4 font-semibold text-slateblue rounded min-w-[120px] min-h-[45px]"
+            >
+              {breakRunning ? "Pause Break" : "Start Break"}
+            </button>
+          )
+          }
         </div>
       </div>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
         <StatCard
           icon={<Users className="h-6 w-6" />}
@@ -442,9 +472,11 @@ const Dashboard = () => {
               {errorAttendance.map((entry, idx) => {
                 const start = new Date(entry.startTime);
                 const end =
-                  entry.status === "Clocked Out" && entry.endTime
+                  entry.status === "Clock Out" && entry.endTime
                     ? new Date(entry.endTime)
-                    : new Date(); // use current time if not clocked out
+                    : new Date();
+
+                const message = entry.status == "Clock Out" ? "Clock Out" : "Hasn't Clocked Out";
 
                 const durationMs = end - start;
                 const hours = Math.floor(durationMs / (1000 * 60 * 60));
@@ -468,7 +500,7 @@ const Dashboard = () => {
                       </span>
                     </div>
                     <div className="text-sm text-gray-600">
-                      Issue: Hasn't Clocked Out
+                      Issue: {message}
                     </div>
                     <div className="text-sm text-gray-700">
                       Duration: {hours}h {minutes}m
@@ -559,7 +591,7 @@ const Dashboard = () => {
 
 const StatCard = ({ icon, title, value }) => (
   <div className="bg-white rounded-xl p-4 shadow flex items-center gap-4">
-    <div className="bg-blue-100 text-blue-600 p-3 rounded-full">{icon}</div>
+    <div className="bg-blue-100 text-slateblue p-3 rounded-full">{icon}</div>
     <div>
       <p className="text-sm text-gray-600">{title}</p>
       <p className="text-xl font-semibold">{value}</p>
@@ -571,7 +603,7 @@ const ManageCard = ({ title, description }) => (
   <div className="bg-white shadow rounded-xl p-6 hover:shadow-md transition">
     <h3 className="text-lg font-semibold mb-2 text-gray-800">{title}</h3>
     <p className="text-sm text-gray-600">{description}</p>
-    <button className="mt-4 text-sm text-blue-600 font-medium hover:underline">
+    <button className="mt-4 text-sm text-slateblue font-medium hover:underline">
       Go to {title}
     </button>
   </div>

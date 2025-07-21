@@ -20,9 +20,13 @@ const Layout = ({ children }) => {
   }, [collapsed]);
 
   return (
-    <div className="flex h-screen bg-gray-100 relative">
-      <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
+    <div className="flex h-screen bg-gray-100 overflow-hidden relative">
+      {/* Sidebar should be under header but full height */}
+      <div className="h-full">
+        <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
+      </div>
 
+      {/* Mobile overlay */}
       {collapsed && (
         <div
           className="fixed inset-0 top-16 bg-black bg-opacity-30 z-40 xl:hidden"
@@ -30,11 +34,14 @@ const Layout = ({ children }) => {
         />
       )}
 
-      <div className="flex-1 flex flex-col min-h-screen overflow-y-auto">
+      {/* Main content area */}
+      <div className="flex-1 relative flex flex-col">
+        {/* Fixed header on top */}
         <Header toggleSidebar={toggleSidebar} />
 
+        {/* Scrollable content area with top padding for header height */}
         <main
-          className={`pt-20 px-4 pb-8 transition-all duration-300 ${
+          className={`p-4 mt-4 overflow-y-auto h-full ${
             collapsed
               ? "blur-sm pointer-events-none xl:blur-0 xl:pointer-events-auto"
               : ""

@@ -52,16 +52,16 @@ export default function LeavePage() {
   const goToAddLeave = () => navigate("/add-Leave");
 
   return (
-    <div className="max-w-6xl mx-auto mt-6 px-4">
+    <div className="max-w-full mx-auto">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
         <div className="flex items-center gap-2">
-          <CalendarX className="text-blue-600 w-6 h-6" />
+          <CalendarX className="text-slateblue w-6 h-6" />
           <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Leaves</h1>
         </div>
         <button
           onClick={goToAddLeave}
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+          className="flex items-center gap-2 bg-slateblue text-white px-4 py-2 rounded-lg hover:bg-hoverslateblue transition"
         >
           <PlusCircle size={18} />
           <span className="text-sm">Request Leave</span>
@@ -70,8 +70,8 @@ export default function LeavePage() {
 
       {/* Desktop Table */}
       <div className="hidden md:block">
-        <table className="w-full text-sm md:text-base text-left table-auto rounded-lg shadow bg-white">
-          <thead className="bg-blue-600 text-white">
+        <table className="w-full text-sm  text-left table-auto rounded-lg shadow bg-white">
+          <thead className="bg-slateblue text-white">
             <tr>
               <th className="py-3 px-4">Employee Name</th>
               <th className="py-3 px-4">Request Date</th>
@@ -113,7 +113,7 @@ export default function LeavePage() {
                       <div className="flex justify-center gap-2">
                         <button
                           onClick={() => handleStatusChange(leave._id, "Accepted")}
-                          className="text-blue-600 hover:text-blue-800"
+                          className="text-slateblue hover:text-hoverslateblue"
                           title="Accept"
                         >
                           <Check size={18} />
@@ -170,7 +170,7 @@ export default function LeavePage() {
                 <div className="flex gap-4">
                   <button
                     onClick={() => handleStatusChange(leave._id, "Accepted")}
-                    className="text-blue-600 hover:text-blue-800"
+                    className="text-slateblue hover:text-hoverslateblue"
                     title="Accept"
                   >
                     <Check size={18} />

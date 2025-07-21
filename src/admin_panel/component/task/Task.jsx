@@ -6,7 +6,7 @@ import { showSuccessToast } from "../../utils/toast";
 
 export default function Task() {
   const [employees, setEmployees] = useState([]);
-  const [userId,setUserId] = useState(null)
+  const [userId, setUserId] = useState(null)
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -15,45 +15,45 @@ export default function Task() {
     fetchEmployees();
   }, []);
 
-     const fetchEmployees = async () => {
-        const token = localStorage.getItem("token");
-        const decoded = jwtDecode(token);
-        const userId = decoded.userId;
-      try {
-        const response = await axios.get(`https://office-dashboard-backend.zeabur.app/getTasksByUser/${userId}`);
-        setEmployees(response.data);
-        
-      } catch (error) {
-        console.error("Error fetching employees:", error);
-      }
-    };
- 
+  const fetchEmployees = async () => {
+    const token = localStorage.getItem("token");
+    const decoded = jwtDecode(token);
+    const userId = decoded.userId;
+    try {
+      const response = await axios.get(`https://office-dashboard-backend.zeabur.app/getTasksByUser/${userId}`);
+      setEmployees(response.data);
 
-  const handleStatus = async(id) => {
-try {
-await axios.put(`https://office-dashboard-backend.zeabur.app/updateTask/${id}`);
-fetchEmployees();
-  showSuccessToast("Task Submit Successfully")
-} catch (error) {
-    console.log("Error Submiting", error);
-}
+    } catch (error) {
+      console.error("Error fetching employees:", error);
+    }
+  };
+
+
+  const handleStatus = async (id) => {
+    try {
+      await axios.put(`https://office-dashboard-backend.zeabur.app/updateTask/${id}`);
+      fetchEmployees();
+      showSuccessToast("Task Submit Successfully")
+    } catch (error) {
+      console.log("Error Submiting", error);
+    }
   };
 
 
   return (
-    <div className="max-w-6xl mx-auto mt-6 px-4">
+    <div className="max-w-full mx-auto">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
         <div className="flex items-center gap-2">
-          <CheckCheck className="text-blue-600 w-6 h-6" />
+          <CheckCheck className="text-slateblue w-6 h-6" />
           <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Task</h1>
         </div>
       </div>
 
       {/* Desktop Table */}
       <div className="hidden md:block">
-        <table className="w-full text-sm md:text-base text-left table-auto rounded-lg shadow bg-white">
-          <thead className="bg-blue-600 text-white">
+        <table className="w-full text-sm  text-left table-auto rounded-lg shadow bg-white">
+          <thead className="bg-slateblue text-white">
             <tr>
               <th className="py-3 px-4">Assign To</th>
               <th className="py-3 px-4">Task</th>
@@ -74,17 +74,17 @@ fetchEmployees();
                   {emp.createdAt ? new Date(emp.createdAt).toLocaleDateString() : ""}
                 </td>
                 <td className="py-3 px-4">
-                    {emp.status == "Pending" && emp.assignedTo._id == userId ? (
-       <button
-                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition"
-                    onClick={() => handleStatus(emp._id)}
-                  >
-                  Submit
-                  </button>
-                    ) : (
-                         <span className="text-gray-400 italic">No actions</span>
-                    )}
-           
+                  {emp.status == "Pending" && emp.assignedTo._id == userId ? (
+                    <button
+                      className="bg-slateblue text-white px-3 py-1 rounded hover:bg-hoverslateblue transition"
+                      onClick={() => handleStatus(emp._id)}
+                    >
+                      Submit
+                    </button>
+                  ) : (
+                    <span className="text-gray-400 italic">No actions</span>
+                  )}
+
                 </td>
               </tr>
             ))}
@@ -121,22 +121,22 @@ fetchEmployees();
               </div>
               <div className="text-sm text-gray-600">
                 <strong>Assign Date:</strong>{" "}
-              {emp.createdAt ? new Date(emp.createdAt).toLocaleDateString() : ""}
+                {emp.createdAt ? new Date(emp.createdAt).toLocaleDateString() : ""}
               </div>
               <div className="text-sm text-gray-600 mb-3">
                 <strong>Action:</strong>{" "}
-                             {emp.status == "Pending" ? (
-       <button
-                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition"
+                {emp.status == "Pending" ? (
+                  <button
+                    className="bg-slateblue text-white px-3 py-1 rounded hover:bg-hoverslateblue transition"
                     onClick={() => handleStatus(emp._id)}
                   >
-                  Submit
+                    Submit
                   </button>
-                    ) : (
-                         <span className="text-gray-400 italic">No actions</span>
-                    )}
+                ) : (
+                  <span className="text-gray-400 italic">No actions</span>
+                )}
               </div>
-              </div>
+            </div>
           ))
         )}
       </div>

@@ -14,10 +14,10 @@ import { showErrorToast } from "../../utils/toast";
 
 const navItems = [
   { label: "Dashboard", path: "/", icon: <Home /> },
+  { label: "Clock In Today", path: "/ClockInToday", icon: <Clock /> },
   { label: "Employees", path: "/employees", icon: <User /> },
   { label: "Department", path: "/department", icon: <UserCog /> },
   { label: "Leave", path: "/Leave", icon: <CalendarX /> },
-  { label: "Clock In Today", path: "/ClockInToday", icon: <Clock /> },
   { label: "Task", path: "/Task", icon: <CheckCheck /> },
   { label: "Logout", path: "/logout", icon: <LogOut />, isLogout: true },
 ];
@@ -63,28 +63,15 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
 
   return (
     <div
-      className={`fixed top-16 left-0 bottom-0 bg-blue-600 text-white shadow-lg z-50 transition-all duration-300 ease-in-out 
-        ${collapsed ? "w-64" : "w-0"} 
+      className={`h-screen fixed top-16 left-0 bottom-0 bg-slateblue text-white shadow-lg z-50 transition-all duration-300 ease-in-out 
+        ${collapsed ? "w-32" : "w-0"} 
         overflow-hidden 
-        xl:static xl:w-64 xl:block`}
+        md:static md:w-32 md:block`}
     >
       <nav className="mt-4 flex flex-col gap-1">
         {navItems.map(({ label, path, icon, isLogout }) => {
-          if (isLogout) {
-            return (
-              <button
-                key={label}
-                onClick={() => {
-                  handleLogout();
-                  handleNavClick();
-                }}
-                className="flex items-center gap-4 px-4 py-3 hover:bg-blue-500 text-left w-full"
-              >
-                <span>{icon}</span>
-                <span className="text-sm">{label}</span>
-              </button>
-            );
-          }
+
+
 
           const restricted = isRestrictedPath(path);
           const canAccess = !restricted || isAllowedRole();
@@ -94,8 +81,8 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
               key={label}
               label={label}
               icon={icon}
-              to={path}
-              onNavigate={handleNavClick}
+              to={isLogout ? "/login" : path}
+              onNavigate={isLogout ? handleLogout : handleNavClick}
             />
           ) : (
             <button
@@ -104,17 +91,18 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
                 handleBlockedClick(label);
                 handleNavClick();
               }}
-              className="flex items-center gap-4 px-4 py-3 text-left w-full cursor-not-allowed hover:bg-blue-400/50"
+
+              className=" items-center gap-4 px-4 py-3 transition-colors duration-200 hover:bg-hoverslateblue"
             >
-              <span>{icon}</span>
-              <span className="text-sm">{label}</span>
+              <span className="flex items-center justify-center text-lg">{icon}</span>
+              <span className="text-sm flex items-center justify-center">{label}</span>
             </button>
           );
         })}
       </nav>
     </div>
   );
-};
+}
 
 const NavItem = ({ icon, label, to, onNavigate }) => {
   return (
@@ -122,15 +110,15 @@ const NavItem = ({ icon, label, to, onNavigate }) => {
       to={to}
       onClick={onNavigate}
       className={({ isActive }) =>
-        `flex items-center gap-4 px-4 py-3 transition-colors duration-200 ${
-          isActive ? "bg-blue-700" : "hover:bg-blue-500"
+        ` items-center gap-4 px-4 py-3 transition-colors duration-200 ${isActive ? "bg-hoverslateblue" : "hover:bg-hoverslateblue"
         }`
       }
     >
-      <span>{icon}</span>
-      <span className="text-sm">{label}</span>
+      <span className="flex items-center justify-center text-lg">{icon}</span>
+      <span className="text-sm flex items-center justify-center">{label}</span>
     </NavLink>
   );
 };
+
 
 export default Sidebar;

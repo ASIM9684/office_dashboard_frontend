@@ -36,9 +36,9 @@ const navigate = useNavigate();
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-6 mt-8 bg-white rounded-2xl shadow-lg">
+    <div className="w-full max-w-full mx-auto p-8 mt-4 bg-white rounded-2xl shadow-md">
       <div className="flex items-center gap-3 mb-6">
-        <UserPlus className="text-blue-600 w-6 h-6" />
+        <UserPlus className="text-slateblue w-6 h-6" />
         <h2 className="text-2xl font-bold text-gray-800">Assign Task</h2>
       </div>
 
@@ -55,7 +55,7 @@ const navigate = useNavigate();
         <div className="md:col-span-2 text-right mt-2">
           <button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition duration-300"
+            className="bg-slateblue hover:bg-hoverslateblue text-white px-6 py-2 rounded-lg font-medium transition duration-300"
           >
             Assign Task
           </button>

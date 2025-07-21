@@ -22,11 +22,11 @@ export default function ClockInToday() {
     fetchEmployees();
   }, []);
   return (
-    <div className="max-w-6xl mx-auto mt-6 px-4">
+    <div className="max-w-full mx-auto">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
         <div className="flex items-center gap-2">
-          <Clock className="text-blue-600 w-6 h-6" />
+          <Clock className="text-slateblue w-6 h-6" />
           <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
             Clock In Today
           </h1>
@@ -35,8 +35,8 @@ export default function ClockInToday() {
 
       {/* Desktop Table */}
       <div className="hidden md:block">
-        <table className="w-full text-sm md:text-base text-left table-auto rounded-lg shadow bg-white">
-          <thead className="bg-blue-600 text-white">
+        <table className="w-full text-sm  text-left table-auto rounded-lg shadow bg-white">
+          <thead className="bg-slateblue text-white">
             <tr>
               <th className="py-3 px-4">Name</th>
               <th className="py-3 px-4">Clock In</th>

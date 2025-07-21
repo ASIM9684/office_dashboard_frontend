@@ -91,7 +91,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto mt-10 p-8 bg-white rounded-2xl shadow-md">
+    <div className="w-full max-w-full mx-auto p-8 mt-4 bg-white rounded-2xl shadow-md">
       <h2 className="text-3xl font-bold text-gray-800 mb-8">Edit Profile</h2>
       <form
         onSubmit={handleSubmit}
@@ -141,7 +141,7 @@ const Profile = () => {
         <div className="md:col-span-2 flex justify-end mt-4">
           <button
             type="submit"
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+            className="bg-slateblue text-white px-6 py-2 rounded-lg hover:bg-hoverslateblue transition"
           >
             Save Changes
           </button>

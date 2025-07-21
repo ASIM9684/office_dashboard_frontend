@@ -44,16 +44,15 @@ export default function EmployeesPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto mt-6 px-4">
-      {/* Header */}
+    <div className="max-w-full">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
         <div className="flex items-center gap-2">
-          <User className="text-blue-600 w-6 h-6" />
+          <User className="text-slateblue w-6 h-6" />
           <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Employees</h1>
         </div>
         <button
           onClick={goToAddEmployee}
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+          className="flex items-center gap-2 bg-slateblue text-white px-4 py-2 rounded-lg hover:bg-hoverslateblue transition"
         >
           <PlusCircle size={18} />
           <span className="text-sm">Add Employee</span>
@@ -62,8 +61,8 @@ export default function EmployeesPage() {
 
       {/* Desktop Table */}
       <div className="hidden md:block">
-        <table className="w-full text-sm md:text-base text-left table-auto rounded-lg shadow bg-white">
-          <thead className="bg-blue-600 text-white">
+        <table className="w-full text-sm  text-left table-auto rounded-lg shadow bg-white">
+          <thead className="bg-slateblue text-white">
             <tr>
               <th className="py-3 px-4">Name</th>
               <th className="py-3 px-4">Email</th>
@@ -89,7 +88,7 @@ export default function EmployeesPage() {
                   <div className="flex justify-center gap-2">
                     <button
                       onClick={() => handleEdit(emp)}
-                      className="text-blue-600 hover:text-blue-800 transition"
+                      className="text-slateblue hover:text-hoverslateblue transition"
                       title="Edit"
                     >
                       <Pencil size={18} />
@@ -105,7 +104,7 @@ export default function EmployeesPage() {
                 </td>
                 <td className="py-3 px-4 text-center">
                   <button
-                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition"
+                    className="bg-slateblue text-white px-3 py-1 rounded hover:bg-hoverslateblue transition"
                     onClick={() => router(`/AttendanceCardList/${emp._id}`)}
                   >
                     View Attendance
@@ -113,7 +112,7 @@ export default function EmployeesPage() {
                 </td>
                 <td className="py-3 px-4 text-center">
                   <button
-                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition"
+                    className="bg-slateblue text-white px-3 py-1 rounded hover:bg-hoverslateblue transition"
                     onClick={() => router(`/AssignTask/${emp._id}`)}
                   >
                     Assign Task
@@ -157,7 +156,7 @@ export default function EmployeesPage() {
               <div className="text-sm text-gray-600">
                 <strong>View Attendance:</strong>{" "}
                  <button
-                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition mb-1"
+                    className="bg-slateblue text-white px-3 py-1 rounded hover:bg-hoverslateblue transition mb-1"
                     onClick={() => router(`/AttendanceCardList/${emp._id}`)}
                   >
                     View Attendance
@@ -166,7 +165,7 @@ export default function EmployeesPage() {
               <div className="text-sm text-gray-600 mb-3">
                 <strong>Assign Task:</strong>{" "}
                  <button
-                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition mb-3"
+                    className="bg-slateblue text-white px-3 py-1 rounded hover:bg-hoverslateblue transition mb-3"
                     onClick={() => router(`/AssignTask/${emp._id}`)}
                   >
                     Assign Task
@@ -175,7 +174,7 @@ export default function EmployeesPage() {
               <div className="flex gap-4">
                 <button
                   onClick={() => handleEdit(emp)}
-                  className="text-blue-600 hover:text-blue-800 transition"
+                  className="text-slateblue hover:text-hoverslateblue transition"
                   title="Edit"
                 >
                   <Pencil size={18} />

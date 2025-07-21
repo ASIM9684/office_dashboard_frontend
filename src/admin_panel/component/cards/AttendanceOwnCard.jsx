@@ -3,6 +3,7 @@ import { jwtDecode } from "jwt-decode";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { showSuccessToast } from "../../utils/toast";
+import { useParams } from "react-router-dom";
 
 // Utility functions
 const parseTimeStringToSeconds = (timeStr) => {
@@ -18,9 +19,9 @@ const formatSecondsToHHMMSS = (totalSeconds) => {
 };
 
 // Attendance Card Component
-const AttendanceCard = ({ clockIn, clockOut, breakTime, workDuration }) => (
+const AttendanceCard = ({ clockIn, clockOut, breakTime, workDuration, absenceHours }) => (
   <div className="bg-white shadow rounded-xl p-4 mb-4 w-full">
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
       <div>
         <span className="font-medium text-gray-700">🕘 Clock In:</span>
         <div className="text-gray-800">{clockIn}</div>
@@ -37,6 +38,10 @@ const AttendanceCard = ({ clockIn, clockOut, breakTime, workDuration }) => (
         <span className="font-medium text-gray-700">💼 Work Duration:</span>
         <div className="text-gray-800">{workDuration}</div>
       </div>
+      <div>
+        <span className="font-medium text-gray-700">⏸️ Absence Hours:</span>
+        <div className="text-gray-800">{absenceHours}</div>
+      </div>
     </div>
   </div>
 );
@@ -48,16 +53,11 @@ const AttendanceOwnCard = () => {
   const [loading, setLoading] = useState(true);
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
-      2,
-      "0"
-    )}`;
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
   });
 
- const exportToPDF = () => {
-    const token = localStorage.getItem("token");
-    const decoded = jwtDecode(token);
-    const userName = decoded.name;
+  const exportToPDF = () => {
+    const userName = attendanceData[0]?.userId?.name || "User";
 
     const doc = new jsPDF();
     doc.setFontSize(16);
@@ -72,22 +72,30 @@ const AttendanceOwnCard = () => {
       const breakTime = entry.breakTime || "00:00:00";
 
       let workDuration = "—";
+      let absenceHours = "00:00:00";
+      
       if (end) {
         const workSecs = (end - start) / 1000;
         workDuration = formatSecondsToHHMMSS(workSecs > 0 ? workSecs : 0);
+        
+        // Calculate absence hours (8 hours is standard work duration)
+        const standardWorkSecs = 8 * 3600;
+        if (workSecs < standardWorkSecs) {
+          absenceHours = formatSecondsToHHMMSS(standardWorkSecs - workSecs);
+        }
       }
-          //  const clockIn = start.toLocaleString();
-          //       const clockOut = end ? end.toLocaleString() : "—";
+      
       return [
         start.toLocaleString(),
         end ? end.toLocaleString() : "—",
         breakTime,
         workDuration,
+        absenceHours
       ];
     });
 
     autoTable(doc, {
-      head: [["Clock In", "Clock Out", "Break Time", "Work Duration"]],
+      head: [["Clock In", "Clock Out", "Break Time", "Work Duration", "Absence Hours"]],
       body: tableData,
       startY: 30,
       styles: { fontSize: 10 },
@@ -95,34 +103,43 @@ const AttendanceOwnCard = () => {
 
     const summaryY = doc.lastAutoTable.finalY + 10;
 
-    let totalBreakSeconds = 0;
-    let totalWorkSeconds = 0;
+  let totalBreakSeconds = 0;
+  let totalWorkSeconds = 0;
+  let totalAbsenceSeconds = 0;
 
-    filteredData.forEach((entry) => {
-      const start = new Date(entry.startTime);
-      const end = entry.endTime ? new Date(entry.endTime) : null;
-      const breakSecs = parseTimeStringToSeconds(entry.breakTime || "00:00:00");
+  const STANDARD_WORK_SECONDS = 8 * 3600;
 
-      if (start && end) {
-        const workSecs = (end - start) / 1000 - breakSecs;
-        totalWorkSeconds += workSecs > 0 ? workSecs : 0;
-      }
+  filteredData.forEach((entry) => {
+    const start = new Date(entry.startTime);
+    const end = entry.endTime ? new Date(entry.endTime) : null;
+    const breakSecs = parseTimeStringToSeconds(entry.breakTime || "00:00:00");
 
+    if (start && end && !isNaN(start) && !isNaN(end)) {
+      const workSecs = (end - start) / 1000; // same as card
+      totalWorkSeconds += workSecs;
       totalBreakSeconds += breakSecs;
-    });
 
-    const totalWork = formatSecondsToHHMMSS(totalWorkSeconds);
-    const totalBreak = formatSecondsToHHMMSS(totalBreakSeconds);
+      // Absence = if less than 8 hrs
+      if (workSecs < STANDARD_WORK_SECONDS) {
+        totalAbsenceSeconds += (STANDARD_WORK_SECONDS - workSecs);
+      }
+    }
+  });
+
+  const totalWork = formatSecondsToHHMMSS(totalWorkSeconds);
+  const totalBreak = formatSecondsToHHMMSS(totalBreakSeconds);
+  const totalAbsence = formatSecondsToHHMMSS(totalAbsenceSeconds);
 
     doc.text(`Total Work Time: ${totalWork}`, 14, summaryY);
     doc.text(`Total Break Time: ${totalBreak}`, 14, summaryY + 8);
+    doc.text(`Total Absence Time: ${totalAbsence}`, 14, summaryY + 16);
 
     const fileName = `Attendance_Report_${selectedMonth}.pdf`;
     doc.save(fileName);
- showSuccessToast("Attendance Record Generated Successfully");
+    showSuccessToast("Attendance Record Generated Successfully");
   };
 
-  useEffect(() => {
+ useEffect(() => {
     const fetchAttendance = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -161,16 +178,12 @@ const AttendanceOwnCard = () => {
   };
 
   return (
-    <div className="min-h-screen rounded">
-      <div className=" mx-auto">
+    <div className="min-h-screen rounded p-4">
+      <div className="mx-auto">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">
-            🗓️ Attendance Records
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-800">🗓️ Attendance Records</h1>
           <div className="mt-4 md:mt-0 flex flex-col md:flex-row gap-2 items-start md:items-center">
-            <label className="text-sm font-medium text-gray-700 mr-2">
-              Select Month:
-            </label>
+            <label className="text-sm font-medium text-gray-700 mr-2">Select Month:</label>
             <input
               type="month"
               value={selectedMonth}
@@ -194,44 +207,50 @@ const AttendanceOwnCard = () => {
           <>
             {/* Monthly Summary */}
             <div className="mt-6 p-4 bg-white rounded-xl shadow mb-4">
-              <h2 className="text-lg font-semibold text-gray-800 mb-2">
-                🔢 Monthly Summary
-              </h2>
-              {(() => {
-                let totalBreakSeconds = 0;
-                let totalWorkSeconds = 0;
+              <h2 className="text-lg font-semibold text-gray-800 mb-2">🔢 Monthly Summary</h2>
+{(() => {
+  let totalBreakSeconds = 0;
+  let totalWorkSeconds = 0;
+  let totalAbsenceSeconds = 0;
 
-                filteredData.forEach((entry) => {
-                  const start = new Date(entry.startTime);
-                  const end = entry.endTime ? new Date(entry.endTime) : null;
-                  const breakSecs = parseTimeStringToSeconds(
-                    entry.breakTime || "00:00:00"
-                  );
+  const STANDARD_WORK_SECONDS = 8 * 3600;
 
-                  if (start && end) {
-                    const workSecs = (end - start) / 1000 - breakSecs;
-                    totalWorkSeconds += workSecs > 0 ? workSecs : 0;
-                  }
+  filteredData.forEach((entry) => {
+    const start = new Date(entry.startTime);
+    const end = entry.endTime ? new Date(entry.endTime) : null;
+    const breakSecs = parseTimeStringToSeconds(entry.breakTime || "00:00:00");
 
-                  totalBreakSeconds += breakSecs;
-                });
+    if (start && end && !isNaN(start) && !isNaN(end)) {
+      const workSecs = (end - start) / 1000; // same as card
+      totalWorkSeconds += workSecs;
+      totalBreakSeconds += breakSecs;
 
-                const totalWork = formatSecondsToHHMMSS(totalWorkSeconds);
-                const totalBreak = formatSecondsToHHMMSS(totalBreakSeconds);
+      // Absence = if less than 8 hrs
+      if (workSecs < STANDARD_WORK_SECONDS) {
+        totalAbsenceSeconds += (STANDARD_WORK_SECONDS - workSecs);
+      }
+    }
+  });
 
-                return (
-                  <div className="text-sm text-gray-700 space-y-1">
-                    <div>
-                      Total Work Time:{" "}
-                      <span className="font-semibold">{totalWork}</span>
-                    </div>
-                    <div>
-                      Total Break Time:{" "}
-                      <span className="font-semibold">{totalBreak}</span>
-                    </div>
-                  </div>
-                );
-              })()}
+  const totalWork = formatSecondsToHHMMSS(totalWorkSeconds);
+  const totalBreak = formatSecondsToHHMMSS(totalBreakSeconds);
+  const totalAbsence = formatSecondsToHHMMSS(totalAbsenceSeconds);
+
+  return (
+    <div className="text-sm text-gray-700 space-y-1">
+      <div>
+        Total Work Time: <span className="font-semibold">{totalWork}</span>
+      </div>
+      <div>
+        Total Break Time: <span className="font-semibold">{totalBreak}</span>
+      </div>
+      <div>
+        Total Absence Time: <span className="font-semibold">{totalAbsence}</span>
+      </div>
+    </div>
+  );
+})()}
+
             </div>
 
             {/* Attendance Cards */}
@@ -244,11 +263,17 @@ const AttendanceOwnCard = () => {
                 const breakTime = entry.breakTime || "00:00:00";
 
                 let workDuration = "—";
+                let absenceHours = "00:00:00";
+                
                 if (end) {
                   const workSecs = (end - start) / 1000;
-                  workDuration = formatSecondsToHHMMSS(
-                    workSecs > 0 ? workSecs : 0
-                  );
+                  workDuration = formatSecondsToHHMMSS(workSecs > 0 ? workSecs : 0);
+                  
+                  // Calculate absence hours (8 hours is standard work duration)
+                  const standardWorkSecs = 8 * 3600;
+                  if (workSecs < standardWorkSecs) {
+                    absenceHours = formatSecondsToHHMMSS(standardWorkSecs - workSecs);
+                  }
                 }
 
                 return (
@@ -258,6 +283,7 @@ const AttendanceOwnCard = () => {
                     clockOut={clockOut}
                     breakTime={breakTime}
                     workDuration={workDuration}
+                    absenceHours={absenceHours}
                   />
                 );
               })}
