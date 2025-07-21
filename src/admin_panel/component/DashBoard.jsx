@@ -318,7 +318,15 @@ const Dashboard = () => {
           breakTime: formattedBreakTime
         }
       );
-      const message = status === "On Break" ? "Enjoy Your Break" : "Welcome Back";
+      const message =
+        status === "On Break"
+          ? "Enjoy your break!"
+          : status === "Working"
+            ? "Welcome back to work!"
+            : status === "Clock Out"
+              ? "You have successfully clocked out."
+              : "Status updated.";
+
       if (status === "Clock Out") {
         setClockInRunning(false);
         setBreakRunning(false);

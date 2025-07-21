@@ -14,6 +14,8 @@ export default function ClockInToday() {
         const response = await axios.get(
           `https://office-dashboard-backend.zeabur.app/ClockInNow`
         );
+        console.log(response.data);
+        
         setEmployees(response.data);
       } catch (error) {
         console.error("Error fetching employees:", error);
@@ -41,6 +43,7 @@ export default function ClockInToday() {
               <th className="py-3 px-4">Name</th>
               <th className="py-3 px-4">Clock In</th>
               <th className="py-3 px-4">Clock Out</th>
+              <th className="py-3 px-4">Break</th>
               <th className="py-3 px-4">Status</th>
               <th className="py-3 px-4">Device</th>
             </tr>
@@ -54,14 +57,15 @@ export default function ClockInToday() {
                 <td className="py-3 px-4">{emp.userId.name}</td>
                 <td className="py-3 px-4">
                   {emp.startTime
-                    ? new Date(emp.startTime).toLocaleTimeString()
+                    ? new Date(emp.startTime).toLocaleString()
                     : ""}
                 </td>
                 <td className="py-3 px-4">
                   {emp.endTime
-                    ? new Date(emp.endTime).toLocaleTimeString()
+                    ? new Date(emp.endTime).toLocaleString()
                     : "-"}
                 </td>
+                <td className="py-3 px-4">{emp.calculatedBreakTime}</td>
                 <td className="py-3 px-4">{emp.status}</td>
                      <td className="py-3 px-4">{emp.deviceType}</td>
               </tr>
