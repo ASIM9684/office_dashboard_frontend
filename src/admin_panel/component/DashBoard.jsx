@@ -301,14 +301,18 @@ const Dashboard = () => {
               ? "Working"
               : "";
 
-      await axios.post(`http://localhost:8080/updateclockSheet`, {
+      axios.post(`http://localhost:8080/updateclockSheet`, {
         name,
         status,
         clockInTime: time,
         clockedOutTime: shouldSetEndTime ? new Date().toLocaleString() : "",
         breakTime: formattedBreakTime,
         comment: comment,
-      });
+      }).catch(err => {
+        console.warn("Google Sheet update failed (not blocking):", err?.response?.data?.message || err.message);
+      });;
+
+
 
       await axios.put(
         `http://localhost:8080/updatetodayattendance/${userId}`,
