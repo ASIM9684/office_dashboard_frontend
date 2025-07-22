@@ -115,7 +115,7 @@ const Login = () => {
         <p className="text-sm text-gray-600 mt-6">
           Forgot password ?{" "}
           <a  onClick={() => navigate("/email")} className="text-green-600 font-semibold hover:underline cursor-pointer">
-            Join This Team
+           Click Here
           </a>
         </p> 
       </div>
