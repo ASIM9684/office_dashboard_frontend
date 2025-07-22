@@ -19,7 +19,7 @@ const Login = () => {
     setError("");
 
     try {
-      const res = await axios.post("http://localhost:8080/login", formData);
+      const res = await axios.post("https://office-dashboard-backend.zeabur.app/login", formData);
       localStorage.setItem("token", res.data.token);
       navigate("/");
     } catch (err) {
@@ -86,31 +86,38 @@ const Login = () => {
               type="submit"
               disabled={loading}
               className="w-full bg-[#5a86ba] hover:bg-[#206abf] text-white font-semibold py-2 rounded-md transition"
-            >
+              >
               {loading ? "Logging in..." : "Log In"}
             </button>
             {/* <button
               type="button"
               className="w-full border border-blue-300 text-blue-600 font-semibold py-2 rounded-md hover:bg-blue-50"
-            >
+              >
               Clock In
-            </button>
-            <button
+              </button>
+              <button
               type="button"
               className="w-full border border-green-400 text-green-600 font-semibold py-2 rounded-md hover:bg-green-50"
-            >
+              >
               Clock Out
-            </button> */}
+              </button> */}
           </div>
         </form>
-
-        {/* Bottom Link
+      {/* <p className="text-sm text-gray-600 mt-6">
+                    Forgot password?{" "}
+                    <span
+                        onClick={() => navigate("/email")}
+                        className="text-green-600 font-semibold hover:underline cursor-pointer"
+                    >
+                        Reset here
+                    </span>
+                </p> */}
         <p className="text-sm text-gray-600 mt-6">
           Forgot password ?{" "}
-          <a href="#" className="text-green-600 font-semibold hover:underline">
+          <a  onClick={() => navigate("/email")} className="text-green-600 font-semibold hover:underline cursor-pointer">
             Join This Team
           </a>
-        </p> */}
+        </p> 
       </div>
     </div>
   );

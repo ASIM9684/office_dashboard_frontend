@@ -19,6 +19,8 @@ import AssignTask from './admin_panel/component/task/AssignTask';
 import Task from './admin_panel/component/task/Task';
 import { ToastContainer } from 'react-toastify';
 import RoleProtectedRoute from './admin_panel/utils/RoleProtectedRoute';
+import Email from './admin_panel/component/profile/Email';
+import ResetPassword from './admin_panel/component/profile/ResetPassword';
 
 const isAuthenticated = () => {
   const token = localStorage.getItem('token');
@@ -46,6 +48,14 @@ function App() {
 
         <Route path="/login" element={<LoginRoute><Login />  </LoginRoute>} />
 
+<Route
+  path="/email"
+  element={
+    <Email />
+  }
+/>
+
+   <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route
           path="/"
           element={

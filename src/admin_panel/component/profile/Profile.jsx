@@ -27,7 +27,7 @@ const Profile = () => {
       if (token) {
         const decodedToken = jwtDecode(token);  
         const response = await axios.get(
-          `http://localhost:8080/getUserProfile/${decodedToken.userId}`
+          `https://office-dashboard-backend.zeabur.app/getUserProfile/${decodedToken.userId}`
         );   
         setUser(response.data);
       }
@@ -36,8 +36,8 @@ const Profile = () => {
     const fetchData = async () => {
       try {
         const [deptRes, roleRes] = await Promise.all([
-          axios.get("http://localhost:8080/getDepartments"),
-          axios.get("http://localhost:8080/getRoles"),
+          axios.get("https://office-dashboard-backend.zeabur.app/getDepartments"),
+          axios.get("https://office-dashboard-backend.zeabur.app/getRoles"),
         ]);
         setDepartments(deptRes.data);
         setRoles(roleRes.data);
@@ -79,7 +79,7 @@ const Profile = () => {
     const id = decodedToken.userId;
 
     axios
-      .put(`http://localhost:8080/updateuser/${id}`, user)
+      .put(`https://office-dashboard-backend.zeabur.app/updateuser/${id}`, user)
       .then((res) => {
        localStorage.setItem("token", res.data.token);
         showSuccessToast("Profile Updated Successfully")

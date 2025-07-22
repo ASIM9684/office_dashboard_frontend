@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { UserPlus } from "lucide-react";
+import { Eye, EyeOff, UserPlus } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { showSuccessToast } from "../../utils/toast";
@@ -17,13 +17,14 @@ const AddEmployeeForm = () => {
   const navigate = useNavigate();
   const [departments, setDepartments] = useState([]);
   const [roles, setRoles] = useState([]);
+   const [showPassword, setShowPassword] = useState(false); 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [deptRes, roleRes] = await Promise.all([
-          axios.get("http://localhost:8080/getDepartments"),
-          axios.get("http://localhost:8080/getRoles"),
+          axios.get("https://office-dashboard-backend.zeabur.app/getDepartments"),
+          axios.get("https://office-dashboard-backend.zeabur.app/getRoles"),
         ]);
         setDepartments(deptRes.data);
         setRoles(roleRes.data);
@@ -41,7 +42,7 @@ const AddEmployeeForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const response = axios.post("http://localhost:8080/addemployee", formData);
+    const response = axios.post("https://office-dashboard-backend.zeabur.app/addemployee", formData);
     response
       .then((res) => {
         setFormData({
@@ -140,14 +141,25 @@ const AddEmployeeForm = () => {
           required
         />
 
-        <FormInput
-          label="Password"
-          name="password"
-          type="password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
+<div className="relative">
+  <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+  <input
+    name="password"
+    placeholder="Password"
+    type={showPassword ? "text" : "password"}
+    value={formData.password}
+    onChange={handleChange}
+    required
+    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition pr-10"
+  />
+  <div
+    className="absolute right-3 top-[38px] text-gray-500 cursor-pointer"
+    onClick={() => setShowPassword((prev) => !prev)}
+  >
+    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+  </div>
+</div>
+
         <FormInput
           label="Phone Number"
           name="phone"

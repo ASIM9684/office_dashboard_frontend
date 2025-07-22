@@ -5,6 +5,8 @@ import {
   CalendarCheck,
   FileText,
   ClipboardList,
+  Clock,
+  X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
@@ -43,7 +45,7 @@ const Dashboard = () => {
     const fetchCounts = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:8080/getDashboardCounts"
+          "https://office-dashboard-backend.zeabur.app/getDashboardCounts"
         );
         setCounts(res.data);
       } catch (err) {
@@ -53,7 +55,7 @@ const Dashboard = () => {
     const fetchdepartmentData = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:8080/getUserCountByDepartment"
+          "https://office-dashboard-backend.zeabur.app/getUserCountByDepartment"
         );
         setDepartmentData(res.data);
       } catch (err) {
@@ -71,7 +73,7 @@ const Dashboard = () => {
         const decoded = jwtDecode(token);
         const userId = decoded.userId;
         const res = await fetch(
-          `http://localhost:8080/getAttendenceById/${userId}`
+          `https://office-dashboard-backend.zeabur.app/getAttendenceById/${userId}`
         );
         const data = await res.json();
         if (res.ok) {
@@ -139,7 +141,7 @@ const Dashboard = () => {
       const userId = decoded.userId;
 
       const res = await fetch(
-        "http://localhost:8080/addAttendance",
+        "https://office-dashboard-backend.zeabur.app/addAttendance",
         {
           method: "POST",
           headers: {
@@ -204,7 +206,7 @@ const Dashboard = () => {
         const decoded = jwtDecode(token);
         const userId = decoded.userId;
 
-        const res = await axios.get(`http://localhost:8080/getTodayAttendanceByUser/${userId}`);
+        const res = await axios.get(`https://office-dashboard-backend.zeabur.app/getTodayAttendanceByUser/${userId}`);
         const data = res.data;
 
         if (data?.startTime) {
@@ -248,7 +250,7 @@ const Dashboard = () => {
 
 
       // 2. Log to today's attendance
-      const res = await axios.post("http://localhost:8080/addTodayAttendance", {
+      const res = await axios.post("https://office-dashboard-backend.zeabur.app/addTodayAttendance", {
         userId,
         startTime: start,
         status,
@@ -260,7 +262,7 @@ const Dashboard = () => {
         setStartTime(start);
         setClockInRunning(true);
         showSuccessToast("You're Clocked In");
-        await axios.post("http://localhost:8080/clockSheet", {
+        await axios.post("https://office-dashboard-backend.zeabur.app/clockSheet", {
           name: name,
           status: status,
           clockedInTime: new Date(start).toLocaleString(),
@@ -301,7 +303,7 @@ const Dashboard = () => {
               ? "Working"
               : "";
 
-      axios.post(`http://localhost:8080/updateclockSheet`, {
+      axios.post(`https://office-dashboard-backend.zeabur.app/updateclockSheet`, {
         name,
         status,
         clockInTime: time,
@@ -315,7 +317,7 @@ const Dashboard = () => {
 
 
       await axios.put(
-        `http://localhost:8080/updatetodayattendance/${userId}`,
+        `https://office-dashboard-backend.zeabur.app/updatetodayattendance/${userId}`,
         {
           status,
           endTime: shouldSetEndTime ? new Date().toISOString() : null,
@@ -358,7 +360,7 @@ const Dashboard = () => {
         const decoded = jwtDecode(token);
         const userId = decoded.userId;
         const response = await axios.get(
-          `http://localhost:8080/getPendingTasksByUser/${userId}`
+          `https://office-dashboard-backend.zeabur.app/getPendingTasksByUser/${userId}`
         );
         setPendingTasks(response.data);
       } catch (error) {
@@ -368,7 +370,7 @@ const Dashboard = () => {
     const fetchErrorAttendance = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/ErrorAttendance`
+          `https://office-dashboard-backend.zeabur.app/ErrorAttendance`
         );
         setErrorAttendance(response.data);
       } catch (error) {
@@ -382,7 +384,7 @@ const Dashboard = () => {
   return (
     <div className="">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-3">
-        <h1 className="text-2xl font-bold mb-6 text-gray-800">Admin Dashboard</h1>
+        <h1 className="text-2xl font-bold mb-6 text-gray-800">Dashboard</h1>
 
         <div className="flex items-center gap-x-5 mb-6">
           <div className="text-left text-md text-gray-700  mb-2 md:mb-0 space-y-1 font-semibold">
@@ -454,8 +456,8 @@ const Dashboard = () => {
       {/* Pending Tasks */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
         <div className="p-6 bg-white shadow-md rounded-xl">
-          <h2 className="text-xl font-semibold mb-4 text-gray-800">
-            🕐 Pending Tasks
+          <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
+            <Clock/> Pending Tasks
           </h2>
           {pendingTasks.length === 0 ? (
             <p className="text-gray-500">No pending tasks.</p>
@@ -487,8 +489,9 @@ const Dashboard = () => {
           )}
         </div>
         <div className="bg-white shadow-md rounded-xl p-6">
-          <h2 className="text-xl font-semibold mb-4 text-red-600">
-            ❌ Error Attendance
+          <h2 className="text-xl font-semibold mb-4 text-red-600 flex items-center gap-2">
+        <X color="red" strokeWidth={3} /> <span>Error Attendance</span>
+
           </h2>
           {errorAttendance.length === 0 ? (
             <p className="text-gray-500">No attendance errors.</p>

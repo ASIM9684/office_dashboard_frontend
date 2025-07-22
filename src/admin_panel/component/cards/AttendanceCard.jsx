@@ -4,6 +4,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { showSuccessToast } from "../../utils/toast";
 import { useParams } from "react-router-dom";
+import { Calendar } from "lucide-react";
 
 // Utility functions
 const parseTimeStringToSeconds = (timeStr) => {
@@ -23,23 +24,23 @@ const AttendanceCard = ({ clockIn, clockOut, breakTime, workDuration, absenceHou
   <div className="bg-white shadow rounded-xl p-4 mb-4 w-full">
     <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
       <div>
-        <span className="font-medium text-gray-700">🕘 Clock In:</span>
+        <span className="font-medium text-gray-700">Clock In:</span>
         <div className="text-gray-800">{clockIn}</div>
       </div>
       <div>
-        <span className="font-medium text-gray-700">🕔 Clock Out:</span>
+        <span className="font-medium text-gray-700">Clock Out:</span>
         <div className="text-gray-800">{clockOut}</div>
       </div>
       <div>
-        <span className="font-medium text-gray-700">☕ Break Time:</span>
+        <span className="font-medium text-gray-700">Break Time:</span>
         <div className="text-gray-800">{breakTime}</div>
       </div>
       <div>
-        <span className="font-medium text-gray-700">💼 Work Duration:</span>
+        <span className="font-medium text-gray-700">Work Duration:</span>
         <div className="text-gray-800">{workDuration}</div>
       </div>
       <div>
-        <span className="font-medium text-gray-700">⏸️ Absence Hours:</span>
+        <span className="font-medium text-gray-700">Absence Hours:</span>
         <div className="text-gray-800">{absenceHours}</div>
       </div>
     </div>
@@ -144,7 +145,7 @@ const AttendanceOwnCard = () => {
   useEffect(() => {
     const fetchAttendance = async () => {
       try {
-        const res = await fetch(`http://localhost:8080/getAttendenceById/${id}`);
+        const res = await fetch(`https://office-dashboard-backend.zeabur.app/getAttendenceById/${id}`);
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || "Failed to fetch");
         setAttendanceData(data);
@@ -178,7 +179,7 @@ const AttendanceOwnCard = () => {
     <div className="min-h-screen rounded p-4">
       <div className="mx-auto">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">🗓️ Attendance Records</h1>
+     <h1 className="text-2xl font-bold text-gray-800 flex gap-2 items-center"><Calendar/> Attendance Records</h1>
           <div className="mt-4 md:mt-0 flex flex-col md:flex-row gap-2 items-start md:items-center">
             <label className="text-sm font-medium text-gray-700 mr-2">Select Month:</label>
             <input
@@ -204,7 +205,7 @@ const AttendanceOwnCard = () => {
           <>
             {/* Monthly Summary */}
             <div className="mt-6 p-4 bg-white rounded-xl shadow mb-4">
-              <h2 className="text-lg font-semibold text-gray-800 mb-2">🔢 Monthly Summary</h2>
+              <h2 className="text-lg font-semibold text-gray-800 mb-2">Monthly Summary</h2>
 {(() => {
   let totalBreakSeconds = 0;
   let totalWorkSeconds = 0;

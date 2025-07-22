@@ -28,8 +28,8 @@ const navigate = useNavigate();
     const fetchData = async () => {
       try {
         const [deptRes, roleRes] = await Promise.all([
-          axios.get("http://localhost:8080/getDepartments"),
-          axios.get("http://localhost:8080/getRoles"),
+          axios.get("https://office-dashboard-backend.zeabur.app/getDepartments"),
+          axios.get("https://office-dashboard-backend.zeabur.app/getRoles"),
         ]);
         setDepartments(deptRes.data);
         setRoles(roleRes.data);
@@ -47,7 +47,7 @@ const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-  const response = axios.put(`http://localhost:8080/updateEmployee/${id}`, formData);
+  const response = axios.put(`https://office-dashboard-backend.zeabur.app/updateEmployee/${id}`, formData);
     response
       .then((res) => {
         setFormData({
