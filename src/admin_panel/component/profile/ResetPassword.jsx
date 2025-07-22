@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { showSuccessToast } from "../../utils/toast";
-import { Eye, EyeOff } from "lucide-react"; 
+import { Eye, EyeOff } from "lucide-react";
 
 const ResetPassword = () => {
     const [formData, setFormData] = useState({ password: "" });
-    const [showPassword, setShowPassword] = useState(false); 
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -17,6 +17,9 @@ const ResetPassword = () => {
         setError("");
     };
 
+    useEffect(() => {
+        localStorage.removeItem("token");
+    }, []);
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
