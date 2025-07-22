@@ -22,7 +22,7 @@ const Addleave = () => {
     const userId = decoded.userId;
     e.preventDefault();
     const response = axios.post(
-      `https://office-dashboard-backend.zeabur.app/addleave/${userId}`,
+      `http://localhost:8080/addleave/${userId}`,
       formData
     );
     response

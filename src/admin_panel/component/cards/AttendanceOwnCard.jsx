@@ -146,7 +146,7 @@ const AttendanceOwnCard = () => {
         const decoded = jwtDecode(token);
         const id = decoded.userId;
         const res = await fetch(
-          `https://office-dashboard-backend.zeabur.app/getAttendenceById/${id}`
+          `http://localhost:8080/getAttendenceById/${id}`
         );
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || "Failed to fetch");

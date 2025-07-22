@@ -20,7 +20,7 @@ export default function Task() {
     const decoded = jwtDecode(token);
     const userId = decoded.userId;
     try {
-      const response = await axios.get(`https://office-dashboard-backend.zeabur.app/getTasksByUser/${userId}`);
+      const response = await axios.get(`http://localhost:8080/getTasksByUser/${userId}`);
       setEmployees(response.data);
 
     } catch (error) {
@@ -31,7 +31,7 @@ export default function Task() {
 
   const handleStatus = async (id) => {
     try {
-      await axios.put(`https://office-dashboard-backend.zeabur.app/updateTask/${id}`);
+      await axios.put(`http://localhost:8080/updateTask/${id}`);
       fetchEmployees();
       showSuccessToast("Task Submit Successfully")
     } catch (error) {

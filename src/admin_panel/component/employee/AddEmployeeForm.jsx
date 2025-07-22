@@ -22,8 +22,8 @@ const AddEmployeeForm = () => {
     const fetchData = async () => {
       try {
         const [deptRes, roleRes] = await Promise.all([
-          axios.get("https://office-dashboard-backend.zeabur.app/getDepartments"),
-          axios.get("https://office-dashboard-backend.zeabur.app/getRoles"),
+          axios.get("http://localhost:8080/getDepartments"),
+          axios.get("http://localhost:8080/getRoles"),
         ]);
         setDepartments(deptRes.data);
         setRoles(roleRes.data);
@@ -41,7 +41,7 @@ const AddEmployeeForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const response = axios.post("https://office-dashboard-backend.zeabur.app/addemployee", formData);
+    const response = axios.post("http://localhost:8080/addemployee", formData);
     response
       .then((res) => {
         setFormData({

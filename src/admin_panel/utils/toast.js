@@ -16,7 +16,7 @@ const ToastMessage = ({ icon, message }) => (
 // Show success toast
 export const showSuccessToast = (message) => {
   toast(<ToastMessage icon="✅" message={message} />, {
-    position: "top-right",
+    position: "bottom-right",
     autoClose: 3000,
     closeOnClick: true,
     pauseOnHover: true,
@@ -27,7 +27,7 @@ export const showSuccessToast = (message) => {
 // Show error toast
 export const showErrorToast = (message) => {
   toast(<ToastMessage icon="❌" message={message} />, {
-    position: "top-right",
+    position: "bottom-right",
     autoClose: 3000,
     closeOnClick: true,
     pauseOnHover: true,

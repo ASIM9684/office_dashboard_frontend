@@ -144,7 +144,7 @@ const AttendanceOwnCard = () => {
   useEffect(() => {
     const fetchAttendance = async () => {
       try {
-        const res = await fetch(`https://office-dashboard-backend.zeabur.app/getAttendenceById/${id}`);
+        const res = await fetch(`http://localhost:8080/getAttendenceById/${id}`);
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || "Failed to fetch");
         setAttendanceData(data);

@@ -30,7 +30,7 @@ const Dashboard = () => {
   const [breakRunning, setBreakRunning] = useState(false);
   const [attendanceData, setAttendanceData] = useState([]);
   const [chartData, setChartData] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth()); // 0 = Jan, ..., 11 = Dec
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [startTime, setStartTime] = useState(null);
   const [departmentData, setDepartmentData] = useState([]);
   const [counts, setCounts] = useState({
@@ -43,7 +43,7 @@ const Dashboard = () => {
     const fetchCounts = async () => {
       try {
         const res = await axios.get(
-          "https://office-dashboard-backend.zeabur.app/getDashboardCounts"
+          "http://localhost:8080/getDashboardCounts"
         );
         setCounts(res.data);
       } catch (err) {
@@ -53,7 +53,7 @@ const Dashboard = () => {
     const fetchdepartmentData = async () => {
       try {
         const res = await axios.get(
-          "https://office-dashboard-backend.zeabur.app/getUserCountByDepartment"
+          "http://localhost:8080/getUserCountByDepartment"
         );
         setDepartmentData(res.data);
       } catch (err) {
@@ -71,7 +71,7 @@ const Dashboard = () => {
         const decoded = jwtDecode(token);
         const userId = decoded.userId;
         const res = await fetch(
-          `https://office-dashboard-backend.zeabur.app/getAttendenceById/${userId}`
+          `http://localhost:8080/getAttendenceById/${userId}`
         );
         const data = await res.json();
         if (res.ok) {
@@ -139,7 +139,7 @@ const Dashboard = () => {
       const userId = decoded.userId;
 
       const res = await fetch(
-        "https://office-dashboard-backend.zeabur.app/addAttendance",
+        "http://localhost:8080/addAttendance",
         {
           method: "POST",
           headers: {
@@ -204,7 +204,7 @@ const Dashboard = () => {
         const decoded = jwtDecode(token);
         const userId = decoded.userId;
 
-        const res = await axios.get(`https://office-dashboard-backend.zeabur.app/getTodayAttendanceByUser/${userId}`);
+        const res = await axios.get(`http://localhost:8080/getTodayAttendanceByUser/${userId}`);
         const data = res.data;
 
         if (data?.startTime) {
@@ -248,7 +248,7 @@ const Dashboard = () => {
 
 
       // 2. Log to today's attendance
-      const res = await axios.post("https://office-dashboard-backend.zeabur.app/addTodayAttendance", {
+      const res = await axios.post("http://localhost:8080/addTodayAttendance", {
         userId,
         startTime: start,
         status,
@@ -260,7 +260,7 @@ const Dashboard = () => {
         setStartTime(start);
         setClockInRunning(true);
         showSuccessToast("You're Clocked In");
-        await axios.post("https://office-dashboard-backend.zeabur.app/clockSheet", {
+        await axios.post("http://localhost:8080/clockSheet", {
           name: name,
           status: status,
           clockedInTime: new Date(start).toLocaleString(),
@@ -301,7 +301,7 @@ const Dashboard = () => {
               ? "Working"
               : "";
 
-      await axios.post(`https://office-dashboard-backend.zeabur.app/updateclockSheet`, {
+      await axios.post(`http://localhost:8080/updateclockSheet`, {
         name,
         status,
         clockInTime: time,
@@ -311,7 +311,7 @@ const Dashboard = () => {
       });
 
       await axios.put(
-        `https://office-dashboard-backend.zeabur.app/updatetodayattendance/${userId}`,
+        `http://localhost:8080/updatetodayattendance/${userId}`,
         {
           status,
           endTime: shouldSetEndTime ? new Date().toISOString() : null,
@@ -354,7 +354,7 @@ const Dashboard = () => {
         const decoded = jwtDecode(token);
         const userId = decoded.userId;
         const response = await axios.get(
-          `https://office-dashboard-backend.zeabur.app/getPendingTasksByUser/${userId}`
+          `http://localhost:8080/getPendingTasksByUser/${userId}`
         );
         setPendingTasks(response.data);
       } catch (error) {
@@ -364,7 +364,7 @@ const Dashboard = () => {
     const fetchErrorAttendance = async () => {
       try {
         const response = await axios.get(
-          `https://office-dashboard-backend.zeabur.app/ErrorAttendance`
+          `http://localhost:8080/ErrorAttendance`
         );
         setErrorAttendance(response.data);
       } catch (error) {
