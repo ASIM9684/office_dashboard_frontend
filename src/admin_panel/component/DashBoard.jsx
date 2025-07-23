@@ -124,8 +124,6 @@ const Dashboard = () => {
           breakTime: breakSeconds,
         };
       });
-
-    console.log("Formatted Chart Data:", formatted);
     setChartData(formatted);
   }, [attendanceData, selectedMonth]);
 
