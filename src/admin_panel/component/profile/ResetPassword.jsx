@@ -83,7 +83,7 @@ const ResetPassword = () => {
                             className="absolute right-3 top-[38px] cursor-pointer text-gray-500"
                             onClick={togglePasswordVisibility}
                         >
-                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                            {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
                         </div>
                     </div>
 

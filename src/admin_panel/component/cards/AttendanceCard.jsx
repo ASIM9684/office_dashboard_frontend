@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { showSuccessToast } from "../../utils/toast";
@@ -69,23 +68,23 @@ const AttendanceOwnCard = () => {
     const tableData = filteredData.map((entry) => {
       const start = new Date(entry.startTime);
       const end = entry.endTime ? new Date(entry.endTime) : null;
-      
+
       const breakTime = entry.breakTime || "00:00:00";
 
       let workDuration = "—";
       let absenceHours = "00:00:00";
-      
+
       if (end) {
         const workSecs = (end - start) / 1000;
         workDuration = formatSecondsToHHMMSS(workSecs > 0 ? workSecs : 0);
-        
+
         // Calculate absence hours (8 hours is standard work duration)
         const standardWorkSecs = 8 * 3600;
         if (workSecs < standardWorkSecs) {
           absenceHours = formatSecondsToHHMMSS(standardWorkSecs - workSecs);
         }
       }
-      
+
       return [
         start.toLocaleString(),
         end ? end.toLocaleString() : "—",
@@ -104,32 +103,32 @@ const AttendanceOwnCard = () => {
 
     const summaryY = doc.lastAutoTable.finalY + 10;
 
-  let totalBreakSeconds = 0;
-  let totalWorkSeconds = 0;
-  let totalAbsenceSeconds = 0;
+    let totalBreakSeconds = 0;
+    let totalWorkSeconds = 0;
+    let totalAbsenceSeconds = 0;
 
-  const STANDARD_WORK_SECONDS = 8 * 3600;
+    const STANDARD_WORK_SECONDS = 8 * 3600;
 
-  filteredData.forEach((entry) => {
-    const start = new Date(entry.startTime);
-    const end = entry.endTime ? new Date(entry.endTime) : null;
-    const breakSecs = parseTimeStringToSeconds(entry.breakTime || "00:00:00");
-
-    if (start && end && !isNaN(start) && !isNaN(end)) {
-      const workSecs = (end - start) / 1000; // same as card
-      totalWorkSeconds += workSecs;
+    filteredData.forEach((entry) => {
+      const start = new Date(entry.startTime);
+      const end = entry.endTime ? new Date(entry.endTime) : null;
+      const breakSecs = parseTimeStringToSeconds(entry.breakTime || "00:00:00");
       totalBreakSeconds += breakSecs;
 
-      // Absence = if less than 8 hrs
-      if (workSecs < STANDARD_WORK_SECONDS) {
-        totalAbsenceSeconds += (STANDARD_WORK_SECONDS - workSecs);
-      }
-    }
-  });
+      if (start && end && !isNaN(start) && !isNaN(end)) {
+        const workSecs = (end - start) / 1000; // same as card
+        totalWorkSeconds += workSecs;
 
-  const totalWork = formatSecondsToHHMMSS(totalWorkSeconds);
-  const totalBreak = formatSecondsToHHMMSS(totalBreakSeconds);
-  const totalAbsence = formatSecondsToHHMMSS(totalAbsenceSeconds);
+        // Absence = if less than 8 hrs
+        if (workSecs < STANDARD_WORK_SECONDS) {
+          totalAbsenceSeconds += (STANDARD_WORK_SECONDS - workSecs);
+        }
+      }
+    });
+
+    const totalWork = formatSecondsToHHMMSS(totalWorkSeconds);
+    const totalBreak = formatSecondsToHHMMSS(totalBreakSeconds);
+    const totalAbsence = formatSecondsToHHMMSS(totalAbsenceSeconds);
 
     doc.text(`Total Work Time: ${totalWork}`, 14, summaryY);
     doc.text(`Total Break Time: ${totalBreak}`, 14, summaryY + 8);
@@ -140,7 +139,7 @@ const AttendanceOwnCard = () => {
     showSuccessToast("Attendance Record Generated Successfully");
   };
 
-  const {id} = useParams();
+  const { id } = useParams();
 
   useEffect(() => {
     const fetchAttendance = async () => {
@@ -176,10 +175,10 @@ const AttendanceOwnCard = () => {
   };
 
   return (
-    <div className="min-h-screen rounded p-4">
+    <div className="min-h-screen bg-white rounded-xl p-4 shadow ">
       <div className="mx-auto">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
-     <h1 className="text-2xl font-bold text-gray-800 flex gap-2 items-center"><Calendar/> Attendance Records</h1>
+          <h1 className="text-2xl font-bold text-gray-800 flex gap-2 items-center"><Calendar /> Attendance Records</h1>
           <div className="mt-4 md:mt-0 flex flex-col md:flex-row gap-2 items-start md:items-center">
             <label className="text-sm font-medium text-gray-700 mr-2">Select Month:</label>
             <input
@@ -206,48 +205,50 @@ const AttendanceOwnCard = () => {
             {/* Monthly Summary */}
             <div className="mt-6 p-4 bg-white rounded-xl shadow mb-4">
               <h2 className="text-lg font-semibold text-gray-800 mb-2">Monthly Summary</h2>
-{(() => {
-  let totalBreakSeconds = 0;
-  let totalWorkSeconds = 0;
-  let totalAbsenceSeconds = 0;
+              {(() => {
+                let totalBreakSeconds = 0;
+                let totalWorkSeconds = 0;
+                let totalAbsenceSeconds = 0;
 
-  const STANDARD_WORK_SECONDS = 8 * 3600;
+                const STANDARD_WORK_SECONDS = 8 * 3600;
 
-  filteredData.forEach((entry) => {
-    const start = new Date(entry.startTime);
-    const end = entry.endTime ? new Date(entry.endTime) : null;
-    const breakSecs = parseTimeStringToSeconds(entry.breakTime || "00:00:00");
+                filteredData.forEach((entry) => {
+                  const start = new Date(entry.startTime);
+                  const end = entry.endTime ? new Date(entry.endTime) : null;
+                  const breakSecs = parseTimeStringToSeconds(entry.breakTime || "00:00:00");
+           
+                  
+                  totalBreakSeconds += breakSecs;
+                  
+                  if (start && end && !isNaN(start) && !isNaN(end)) {
+                    const workSecs = (end - start) / 1000; // same as card
+                    totalWorkSeconds += workSecs;
 
-    if (start && end && !isNaN(start) && !isNaN(end)) {
-      const workSecs = (end - start) / 1000; // same as card
-      totalWorkSeconds += workSecs;
-      totalBreakSeconds += breakSecs;
+                    // Absence = if less than 8 hrs
+                    if (workSecs < STANDARD_WORK_SECONDS) {
+                      totalAbsenceSeconds += (STANDARD_WORK_SECONDS - workSecs);
+                    }
+                  }
+                });
 
-      // Absence = if less than 8 hrs
-      if (workSecs < STANDARD_WORK_SECONDS) {
-        totalAbsenceSeconds += (STANDARD_WORK_SECONDS - workSecs);
-      }
-    }
-  });
+                const totalWork = formatSecondsToHHMMSS(totalWorkSeconds);
+                const totalBreak = formatSecondsToHHMMSS(totalBreakSeconds);
+                const totalAbsence = formatSecondsToHHMMSS(totalAbsenceSeconds);
 
-  const totalWork = formatSecondsToHHMMSS(totalWorkSeconds);
-  const totalBreak = formatSecondsToHHMMSS(totalBreakSeconds);
-  const totalAbsence = formatSecondsToHHMMSS(totalAbsenceSeconds);
-
-  return (
-    <div className="text-sm text-gray-700 space-y-1">
-      <div>
-        Total Work Time: <span className="font-semibold">{totalWork}</span>
-      </div>
-      <div>
-        Total Break Time: <span className="font-semibold">{totalBreak}</span>
-      </div>
-      <div>
-        Total Absence Time: <span className="font-semibold">{totalAbsence}</span>
-      </div>
-    </div>
-  );
-})()}
+                return (
+                  <div className="text-sm text-gray-700 space-y-1">
+                    <div>
+                      Total Work Time: <span className="font-semibold">{totalWork}</span>
+                    </div>
+                    <div>
+                      Total Break Time: <span className="font-semibold">{totalBreak}</span>
+                    </div>
+                    <div>
+                      Total Absence Time: <span className="font-semibold">{totalAbsence}</span>
+                    </div>
+                  </div>
+                );
+              })()}
 
             </div>
 
@@ -262,11 +263,11 @@ const AttendanceOwnCard = () => {
 
                 let workDuration = "—";
                 let absenceHours = "00:00:00";
-                
+
                 if (end) {
                   const workSecs = (end - start) / 1000;
                   workDuration = formatSecondsToHHMMSS(workSecs > 0 ? workSecs : 0);
-                  
+
                   // Calculate absence hours (8 hours is standard work duration)
                   const standardWorkSecs = 8 * 3600;
                   if (workSecs < standardWorkSecs) {

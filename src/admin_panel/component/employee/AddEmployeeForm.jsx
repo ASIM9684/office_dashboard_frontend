@@ -156,7 +156,7 @@ const AddEmployeeForm = () => {
     className="absolute right-3 top-[38px] text-gray-500 cursor-pointer"
     onClick={() => setShowPassword((prev) => !prev)}
   >
-    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+    {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
   </div>
 </div>
 

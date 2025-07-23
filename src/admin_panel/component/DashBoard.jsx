@@ -97,29 +97,35 @@ const Dashboard = () => {
     };
 
     const filtered = attendanceData.filter((entry) => {
-      const date = new Date(entry.createdAt);
+      const date = new Date(entry.startTime);
       return date.getMonth() === selectedMonth;
     });
 
-    const formatted = filtered.map((entry) => {
-      const clockTimeStr =
-        typeof entry.clockTime === "string" ? entry.clockTime : "00:00:00";
-      const breakTimeStr =
-        typeof entry.breakTime === "string" ? entry.breakTime : "00:00:00";
-      return {
-        day: new Date(entry.createdAt).toLocaleDateString("default", {
-          day: "numeric",
-          month: "short",
-        }),
-        clockTime: /^\d{2}:\d{2}:\d{2}$/.test(clockTimeStr)
-          ? toSeconds(clockTimeStr)
-          : 0,
-        breakTime: /^\d{2}:\d{2}:\d{2}$/.test(breakTimeStr)
-          ? toSeconds(breakTimeStr)
-          : 0,
-      };
-    });
+    const formatted = filtered
+      .filter((entry) => entry.startTime)
+      .map((entry) => {
+        const start = new Date(entry.startTime);
+        const end = new Date(entry.endTime ?? new Date().toISOString());
 
+        const breakTimeStr =
+          typeof entry.breakTime === "string" ? entry.breakTime : "00:00:00";
+
+        const workSeconds = Math.floor((end - start) / 1000);
+        const breakSeconds = /^\d{2}:\d{2}:\d{2}$/.test(breakTimeStr)
+          ? toSeconds(breakTimeStr)
+          : 0;
+
+        return {
+          day: start.toLocaleDateString("default", {
+            day: "numeric",
+            month: "short",
+          }),
+          clockTime: workSeconds,
+          breakTime: breakSeconds,
+        };
+      });
+
+    console.log("Formatted Chart Data:", formatted);
     setChartData(formatted);
   }, [attendanceData, selectedMonth]);
 
@@ -249,7 +255,6 @@ const Dashboard = () => {
       const start = new Date().toISOString();
 
 
-      // 2. Log to today's attendance
       const res = await axios.post("https://office-dashboard-backend.zeabur.app/addTodayAttendance", {
         userId,
         startTime: start,
@@ -308,6 +313,7 @@ const Dashboard = () => {
         status,
         clockInTime: time,
         clockedOutTime: shouldSetEndTime ? new Date().toLocaleString() : "",
+        workDuration: shouldSetEndTime ? formatTime(clockInTime) : "",
         breakTime: formattedBreakTime,
         comment: comment,
       }).catch(err => {
@@ -338,6 +344,7 @@ const Dashboard = () => {
         setBreakRunning(false);
         setClockInTime(0);
         setStartTimestamp(null);
+        setBreakTime(0);
       }
       else if (status === "Working") {
         setBreakRunning(false);
@@ -384,7 +391,7 @@ const Dashboard = () => {
   return (
     <div className="">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-3">
-        <h1 className="text-2xl font-bold mb-6 text-gray-800">Dashboard</h1>
+        <h1 className="text-xl sm:text-2xl font-bold mb-6 text-gray-800">Dashboard</h1>
 
         <div className="flex items-center gap-x-5 mb-6">
           <div className="text-left text-md text-gray-700  mb-2 md:mb-0 space-y-1 font-semibold">
@@ -457,7 +464,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
         <div className="p-6 bg-white shadow-md rounded-xl">
           <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
-            <Clock/> Pending Tasks
+            <Clock /> Pending Tasks
           </h2>
           {pendingTasks.length === 0 ? (
             <p className="text-gray-500">No pending tasks.</p>
@@ -490,7 +497,7 @@ const Dashboard = () => {
         </div>
         <div className="bg-white shadow-md rounded-xl p-6">
           <h2 className="text-xl font-semibold mb-4 text-red-600 flex items-center gap-2">
-        <X color="red" strokeWidth={3} /> <span>Error Attendance</span>
+            <X color="red" strokeWidth={3} /> <span>Error Attendance</span>
 
           </h2>
           {errorAttendance.length === 0 ? (
@@ -603,6 +610,7 @@ const Dashboard = () => {
                   />
                 ))}
               </Pie>
+              <Tooltip formatter={(value, name) => [`${name}: ${value} Employees`]} />
               <Legend />
             </PieChart>
           </ResponsiveContainer>
@@ -624,16 +632,6 @@ const StatCard = ({ icon, title, value }) => (
       <p className="text-sm text-gray-600">{title}</p>
       <p className="text-xl font-semibold">{value}</p>
     </div>
-  </div>
-);
-
-const ManageCard = ({ title, description }) => (
-  <div className="bg-white shadow rounded-xl p-6 hover:shadow-md transition">
-    <h3 className="text-lg font-semibold mb-2 text-gray-800">{title}</h3>
-    <p className="text-sm text-gray-600">{description}</p>
-    <button className="mt-4 text-sm text-slateblue font-medium hover:underline">
-      Go to {title}
-    </button>
   </div>
 );
 
