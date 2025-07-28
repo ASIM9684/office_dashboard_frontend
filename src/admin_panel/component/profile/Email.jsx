@@ -18,7 +18,7 @@ const Email = () => {
     setError("");
 
     try {
-      const res = await axios.post("https://office-dashboard-backend.zeabur.app/requestPasswordReset", formData);
+      const res = await axios.post("https://dashboard-backend.zeabur.app/requestPasswordReset", formData);
       showSuccessToast("Email sent successfully! Please check your inbox.");
       setFormData({ email: "" });
     } catch (err) {

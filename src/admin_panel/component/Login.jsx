@@ -19,7 +19,7 @@ const Login = () => {
     setError("");
 
     try {
-      const res = await axios.post("https://office-dashboard-backend.zeabur.app/login", formData);
+      const res = await axios.post("https://dashboard-backend.zeabur.app/login", formData);
       localStorage.setItem("token", res.data.token);
       navigate("/");
     } catch (err) {

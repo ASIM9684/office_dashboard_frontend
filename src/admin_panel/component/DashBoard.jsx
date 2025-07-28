@@ -45,7 +45,7 @@ const Dashboard = () => {
     const fetchCounts = async () => {
       try {
         const res = await axios.get(
-          "https://office-dashboard-backend.zeabur.app/getDashboardCounts"
+          "https://dashboard-backend.zeabur.app/getDashboardCounts"
         );
         setCounts(res.data);
       } catch (err) {
@@ -55,7 +55,7 @@ const Dashboard = () => {
     const fetchdepartmentData = async () => {
       try {
         const res = await axios.get(
-          "https://office-dashboard-backend.zeabur.app/getUserCountByDepartment"
+          "https://dashboard-backend.zeabur.app/getUserCountByDepartment"
         );
         setDepartmentData(res.data);
       } catch (err) {
@@ -73,7 +73,7 @@ const Dashboard = () => {
         const decoded = jwtDecode(token);
         const userId = decoded.userId;
         const res = await fetch(
-          `https://office-dashboard-backend.zeabur.app/getAttendenceById/${userId}`
+          `https://dashboard-backend.zeabur.app/getAttendenceById/${userId}`
         );
         const data = await res.json();
         if (res.ok) {
@@ -145,7 +145,7 @@ const Dashboard = () => {
       const userId = decoded.userId;
 
       const res = await fetch(
-        "https://office-dashboard-backend.zeabur.app/addAttendance",
+        "https://dashboard-backend.zeabur.app/addAttendance",
         {
           method: "POST",
           headers: {
@@ -210,7 +210,7 @@ const Dashboard = () => {
         const decoded = jwtDecode(token);
         const userId = decoded.userId;
 
-        const res = await axios.get(`https://office-dashboard-backend.zeabur.app/getTodayAttendanceByUser/${userId}`);
+        const res = await axios.get(`https://dashboard-backend.zeabur.app/getTodayAttendanceByUser/${userId}`);
         const data = res.data;
 
         if (data?.startTime) {
@@ -253,7 +253,7 @@ const Dashboard = () => {
       const start = new Date().toISOString();
 
 
-      const res = await axios.post("https://office-dashboard-backend.zeabur.app/addTodayAttendance", {
+      const res = await axios.post("https://dashboard-backend.zeabur.app/addTodayAttendance", {
         userId,
         startTime: start,
         status,
@@ -265,7 +265,7 @@ const Dashboard = () => {
         setStartTime(start);
         setClockInRunning(true);
         showSuccessToast("You're Clocked In");
-        await axios.post("https://office-dashboard-backend.zeabur.app/clockSheet", {
+        await axios.post("https://dashboard-backend.zeabur.app/clockSheet", {
           name: name,
           status: status,
           clockedInTime: new Date(start).toLocaleString(),
@@ -306,7 +306,7 @@ const Dashboard = () => {
               ? "Working"
               : "";
 
-      axios.post(`https://office-dashboard-backend.zeabur.app/updateclockSheet`, {
+      axios.post(`https://dashboard-backend.zeabur.app/updateclockSheet`, {
         name,
         status,
         clockInTime: time,
@@ -321,7 +321,7 @@ const Dashboard = () => {
 
 
       await axios.put(
-        `https://office-dashboard-backend.zeabur.app/updatetodayattendance/${userId}`,
+        `https://dashboard-backend.zeabur.app/updatetodayattendance/${userId}`,
         {
           status,
           endTime: shouldSetEndTime ? new Date().toISOString() : null,
@@ -365,7 +365,7 @@ const Dashboard = () => {
         const decoded = jwtDecode(token);
         const userId = decoded.userId;
         const response = await axios.get(
-          `https://office-dashboard-backend.zeabur.app/getPendingTasksByUser/${userId}`
+          `https://dashboard-backend.zeabur.app/getPendingTasksByUser/${userId}`
         );
         setPendingTasks(response.data);
       } catch (error) {
@@ -375,7 +375,7 @@ const Dashboard = () => {
     const fetchErrorAttendance = async () => {
       try {
         const response = await axios.get(
-          `https://office-dashboard-backend.zeabur.app/ErrorAttendance`
+          `https://dashboard-backend.zeabur.app/ErrorAttendance`
         );
         setErrorAttendance(response.data);
       } catch (error) {

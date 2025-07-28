@@ -16,7 +16,7 @@ const AddDepartmentForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const response = axios.post("https://office-dashboard-backend.zeabur.app/addDepartment", formData);
+    const response = axios.post("https://dashboard-backend.zeabur.app/addDepartment", formData);
     response
       .then((res) => {
         setFormData({

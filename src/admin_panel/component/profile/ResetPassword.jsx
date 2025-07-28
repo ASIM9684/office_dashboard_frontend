@@ -30,7 +30,7 @@ const ResetPassword = () => {
         setError("");
 
         try {
-            await axios.post("https://office-dashboard-backend.zeabur.app/resetPassword", {
+            await axios.post("https://dashboard-backend.zeabur.app/resetPassword", {
                 token,
                 password: formData.password,
             });

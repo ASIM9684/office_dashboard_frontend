@@ -11,7 +11,7 @@ export default function EmployeesPage() {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const response = await axios.get("https://office-dashboard-backend.zeabur.app/getEmployee");
+        const response = await axios.get("https://dashboard-backend.zeabur.app/getEmployee");
         setEmployees(response.data);
         
       } catch (error) {
@@ -24,7 +24,7 @@ export default function EmployeesPage() {
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this employee?")) {
       axios
-        .delete(`https://office-dashboard-backend.zeabur.app/deleteEmployee/${id}`)
+        .delete(`https://dashboard-backend.zeabur.app/deleteEmployee/${id}`)
         .then(() => {
           setEmployees((prev) => prev.filter((emp) => emp._id !== id));
               showSuccessToast("Employee Deleted Successfully")

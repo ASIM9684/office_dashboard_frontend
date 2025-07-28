@@ -21,7 +21,7 @@ const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const response = axios.put(`https://office-dashboard-backend.zeabur.app/updateDepartment/${id}`, formData);
+    const response = axios.put(`https://dashboard-backend.zeabur.app/updateDepartment/${id}`, formData);
     response
       .then((res) => {
         setFormData({

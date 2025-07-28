@@ -12,7 +12,7 @@ export default function ClockInToday() {
     const fetchEmployees = async () => {
       try {
         const response = await axios.get(
-          `https://office-dashboard-backend.zeabur.app/ClockInNow`
+          `https://dashboard-backend.zeabur.app/ClockInNow`
         );
         console.log(response.data);
         
